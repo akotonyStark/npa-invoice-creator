@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import { useState } from 'react'
 // node.js library that concatenates classes (strings)
 import classnames from 'classnames'
@@ -36,6 +19,7 @@ import {
   Container,
   Row,
   Col,
+  ListGroup,
 } from 'reactstrap'
 
 // core components
@@ -48,6 +32,34 @@ import {
 
 import Header from 'components/Headers/Header.js'
 import NewInvoice from 'components/Modals/NewInvoice'
+
+const currency = (amount) => {
+  return amount.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'GHS',
+  })
+}
+
+const invoices = [
+  {
+    invoiceNum: 899007,
+    product: 'LPG',
+    quantity: 10000000,
+    price: 6.67,
+  },
+  {
+    invoiceNum: 899007,
+    product: 'WHITE PRODUCT',
+    quantity: 7100000,
+    price: 8.67,
+  },
+  {
+    invoiceNum: 739487,
+    product: 'GASOIL',
+    quantity: 4850000,
+    price: 7.67,
+  },
+]
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1)
@@ -96,58 +108,27 @@ const Index = (props) => {
                 <Table className='align-items-center table-flush' responsive>
                   <thead className='thead-light'>
                     <tr>
-                      <th scope='col'>Page name</th>
-                      <th scope='col'>Visitors</th>
-                      <th scope='col'>Unique users</th>
-                      <th scope='col'>Bounce rate</th>
+                      <th scope='col'>Invoice #</th>
+                      <th scope='col'>Product</th>
+                      <th scope='col'>Price</th>
+                      <th scope='col'>Quantity</th>
+                      <th scope='col'>Total Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope='row'>/argon/</th>
-                      <td>4,569</td>
-                      <td>340</td>
-                      <td>
-                        <i className='fas fa-arrow-up text-success mr-3' />{' '}
-                        46,53%
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope='row'>/argon/index.html</th>
-                      <td>3,985</td>
-                      <td>319</td>
-                      <td>
-                        <i className='fas fa-arrow-down text-warning mr-3' />{' '}
-                        46,53%
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope='row'>/argon/charts.html</th>
-                      <td>3,513</td>
-                      <td>294</td>
-                      <td>
-                        <i className='fas fa-arrow-down text-warning mr-3' />{' '}
-                        36,49%
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope='row'>/argon/tables.html</th>
-                      <td>2,050</td>
-                      <td>147</td>
-                      <td>
-                        <i className='fas fa-arrow-up text-success mr-3' />{' '}
-                        50,87%
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope='row'>/argon/profile.html</th>
-                      <td>1,795</td>
-                      <td>190</td>
-                      <td>
-                        <i className='fas fa-arrow-down text-danger mr-3' />{' '}
-                        46,53%
-                      </td>
-                    </tr>
+                    {invoices.map((invoice, key) => (
+                      //console.log('asas')
+                      <tr key={key}>
+                        <th scope='row'>{invoice.invoiceNum}</th>
+                        <td>{invoice.product}</td>
+                        <td>{invoice.price}</td>
+                        <td>{invoice.quantity}</td>
+                        <td>
+                          <i className='fas fa-arrow-up text-success mr-3' />
+                          {currency(invoice.price * invoice.quantity)}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </Card>
