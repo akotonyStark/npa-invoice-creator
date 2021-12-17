@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, createContext } from 'react'
 // node.js library that concatenates classes (strings)
 import classnames from 'classnames'
 // javascipt plugin for creating charts
@@ -40,31 +40,31 @@ const currency = (amount) => {
   })
 }
 
+const moneyInTxt = (value, standard, dec = 2) => {
+  var nf = new Intl.NumberFormat(standard, {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: 2,
+  })
+  return nf.format(Number(value) ? value : 0.0)
+}
+
 const invoices = [
   {
     invoiceNum: 899007,
-    product: 'LPG',
-    quantity: 10000000,
-    price: 6.67,
-  },
-  {
-    invoiceNum: 899007,
-    product: 'WHITE PRODUCT',
-    quantity: 7100000,
-    price: 8.67,
-  },
-  {
-    invoiceNum: 739487,
-    product: 'GASOIL',
-    quantity: 4850000,
-    price: 7.67,
+    customer: 'LPG',
+    type: 'Express',
+    serviceCode: '90LPGX',
+    total: 1960000,
   },
 ]
+
+export const AppContext = createContext(null)
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1)
   const [chartExample1Data, setChartExample1Data] = useState('data1')
   const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false)
+  const [invoiceList, setInvoiceList] = useState(invoices)
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions())
@@ -109,23 +109,23 @@ const Index = (props) => {
                   <thead className='thead-light'>
                     <tr>
                       <th scope='col'>Invoice #</th>
-                      <th scope='col'>Product</th>
-                      <th scope='col'>Price</th>
-                      <th scope='col'>Quantity</th>
-                      <th scope='col'>Total Amount</th>
+                      <th scope='col'>Customer</th>
+                      <th scope='col'>Type</th>
+                      <th scope='col'>Service Code</th>
+                      <th scope='col'>Total Amount (GHS)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {invoices.map((invoice, key) => (
+                    {invoiceList.map((invoice, key) => (
                       //console.log('asas')
                       <tr key={key}>
                         <th scope='row'>{invoice.invoiceNum}</th>
-                        <td>{invoice.product}</td>
-                        <td>{invoice.price}</td>
-                        <td>{invoice.quantity}</td>
+                        <td>{invoice.customer}</td>
+                        <td>{invoice.type}</td>
+                        <td>{invoice.serviceCode}</td>
                         <td>
                           <i className='fas fa-arrow-up text-success mr-3' />
-                          {currency(invoice.price * invoice.quantity)}
+                          {moneyInTxt(invoice.total)}
                         </td>
                       </tr>
                     ))}
@@ -136,7 +136,9 @@ const Index = (props) => {
           </Row>
 
           {showNewInvoiceModal ? (
-            <NewInvoice setShowNewInvoiceModal={setShowNewInvoiceModal} />
+            <AppContext.Provider value={[invoiceList, setInvoiceList]}>
+              <NewInvoice setShowNewInvoiceModal={setShowNewInvoiceModal} />
+            </AppContext.Provider>
           ) : null}
         </Container>
       </div>

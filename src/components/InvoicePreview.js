@@ -12,8 +12,16 @@ const moneyInTxt = (value, standard, dec = 2) => {
 }
 
 function InvoicePreview() {
-  const [formData, gridData, setFormData, setGridData, setShowNewInvoiceModal] =
-    useContext(FormContext)
+  const [
+    formData,
+    gridData,
+    setFormData,
+    setGridData,
+    setShowNewInvoiceModal,
+    init,
+    comments,
+    setComments,
+  ] = useContext(FormContext)
 
   useEffect(() => {
     console.log('GridData in Preview: ', gridData)
@@ -26,7 +34,7 @@ function InvoicePreview() {
   return (
     <Card
       className='shadow'
-      style={{ width: '55%', marginLeft: '10px', padding: '30px' }}
+      style={{ width: '58%', marginLeft: '10px', padding: '30px' }}
     >
       <div style={styles.header}>
         <div style={styles.leftHeader}>
@@ -54,10 +62,9 @@ function InvoicePreview() {
       <div style={styles.title}>
         <h4>Invoice for</h4>
         <h5>{formData.customerName}</h5>
-        <h5>{formData.businessUnit}</h5>
         <h5>{formData.invoiceType}</h5>
       </div>
-      <div style={styles.body}>
+      <div style={styles.tablehead}>
         <Table className='align-items-center table-flush' responsive>
           <thead className='thead-light'>
             <tr>
@@ -69,6 +76,10 @@ function InvoicePreview() {
               <th scope='col'>Ext</th>
             </tr>
           </thead>
+        </Table>
+      </div>
+      <div style={styles.body}>
+        <Table className='align-items-center table-flush' responsive>
           <tbody>
             {gridData.map((item, key) => (
               <tr key={key}>
@@ -76,11 +87,24 @@ function InvoicePreview() {
                 <td>{item.description}</td>
                 <td>{moneyInTxt(item.quantity)}</td>
                 <td>{item.price}</td>
-                <td>{moneyInTxt(item.price * item.quantity)}</td>
+                <td>{moneyInTxt(item.total)}</td>
               </tr>
             ))}
           </tbody>
         </Table>
+      </div>
+      <div style={styles.footer}>
+        <div style={styles.total}>
+          <h5>
+            Total (GHS) {'   '}
+            {moneyInTxt(
+              gridData.reduce((total, item) => total + item.total, 0)
+            )}
+          </h5>
+        </div>
+        <div style={styles.comments}>
+          <h5>{comments}</h5>
+        </div>
       </div>
     </Card>
   )
@@ -89,7 +113,7 @@ function InvoicePreview() {
 const styles = {
   header: {
     display: 'flex',
-    height: '22%',
+    height: '20%',
   },
   leftHeader: {
     display: 'flex',
@@ -106,15 +130,52 @@ const styles = {
     //border: '1px solid green',
   },
   title: {
-    height: '15%',
+    height: '11%',
     backgroundColor: '#eff4fd',
     borderRadius: 10,
     padding: 10,
   },
   body: {
+    marginTop: 0,
+    height: '30%',
+    overflow: 'auto',
+    position: 'relative',
+  },
+  footer: {
+    display: 'flex',
+    flexDirection: 'row',
     marginTop: 50,
     height: '30%',
     overflow: 'auto',
+  },
+  comments: {
+    height: '30%',
+    width: '50%',
+    overflow: 'auto',
+    flexDirection: 'row',
+    backgroundColor: '#eff4fd',
+    borderRadius: 10,
+    padding: 10,
+    color: '#cecece',
+    marginTop: 100,
+  },
+  total: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    height: '20%',
+    width: '50%',
+    overflow: 'auto',
+    marginLeft: 10,
+    borderTop: '1px  solid #e3e3e3',
+    paddingTop: 10,
+    // marginTop: 50,
+  },
+  tablehead: {
+    marginTop: '15px',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
 }
 

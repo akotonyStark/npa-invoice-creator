@@ -6190,25 +6190,25 @@ a.close.disabled {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1rem;
   border-bottom: 0 solid #e9ecef;
   border-top-left-radius: 0.4375rem;
   border-top-right-radius: 0.4375rem;
 }
 .modal-header .close {
-  padding: 1.25rem;
+  padding: 1rem;
   margin: -1rem -1rem -1rem auto;
 }
 
 .modal-title {
   margin-bottom: 0;
-  line-height: 1.1;
+  line-height: 0.5;
 }
 
 .modal-body {
   position: relative;
   flex: 1 1 auto;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .modal-footer {
@@ -6263,7 +6263,7 @@ a.close.disabled {
 @media (min-width: 992px) {
   .modal-lg,
   .modal-xl {
-    max-width: 800px;
+    max-width: 1140px;
   }
 }
 

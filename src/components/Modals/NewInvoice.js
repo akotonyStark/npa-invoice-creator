@@ -9,9 +9,8 @@ const init = {
   businessUnit: '',
   serviceCode: '',
   description: '',
-  quantity: 0,
-  price: 0,
-  comments: '',
+  quantity: '',
+  price: '',
 }
 
 export const FormContext = createContext(null)
@@ -19,11 +18,12 @@ export const FormContext = createContext(null)
 function NewInvoice({ setShowNewInvoiceModal }) {
   const [formData, setFormData] = useState(init)
   const [gridData, setGridData] = useState([])
+  const [comments, setComments] = useState('')
 
   return (
     <>
       <Modal
-        style={{ width: '1200px' }}
+        style={{ width: '150%' }}
         className='modal-dialog-centered modal-xl'
         isOpen={true}
         toggle={() => console.log('toggled')}
@@ -51,6 +51,8 @@ function NewInvoice({ setShowNewInvoiceModal }) {
               setGridData,
               setShowNewInvoiceModal,
               init,
+              comments,
+              setComments,
             ]}
           >
             <InvoiceForm />

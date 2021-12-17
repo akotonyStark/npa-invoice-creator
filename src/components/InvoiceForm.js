@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useRef, useEffect } from 'react'
 import {
   FormGroup,
   Form,
@@ -9,6 +9,7 @@ import {
   Card,
   CardBody,
 } from 'reactstrap'
+import { AppContext } from 'views/Index'
 import { FormContext } from './Modals/NewInvoice'
 
 function InvoiceForm() {
@@ -19,43 +20,76 @@ function InvoiceForm() {
     setGridData,
     setShowNewInvoiceModal,
     init,
+    comments,
+    setComments,
   ] = useContext(FormContext)
 
+  const [invoiceList, setInvoiceList] = useContext(AppContext)
+
+  const descriptionRef = useRef(null)
+  const quantityRef = useRef(null)
+  const priceRef = useRef(null)
+
   useEffect(() => {
-    console.log('Form Data in Form: ', formData)
-    console.log('Grid Data in Form: ', gridData)
+    //console.log('Form Data in Form: ', formData)
+    //console.log('Grid Data in Form: ', gridData)
+    console.log('Invoice List: ', invoiceList)
     return () => {
       //cleanup
     }
-  }, [gridData])
+  }, [gridData, invoiceList])
 
   const addRecordToData = (item) => {
-    setGridData((gridData) => [...gridData, item])
+    const obj = { ...item, total: item.quantity * item.price }
+    setGridData((gridData) => [...gridData, obj])
+    console.log(gridData)
+    //reset form
+    setFormData({
+      customerName: formData.customerName,
+      invoiceType: formData.invoiceType,
+      businessUnit: formData.businessUnit,
+      serviceCode: formData.serviceCode,
+      description: '',
+      quantity: '',
+      price: '',
+    })
+    // descriptionRef.current.value = ''
+    // quantityRef.current.value = ''
+    // priceRef.current.value = ''
+  }
+
+  const saveInvoice = () => {
+    console.log('saving...')
+
+    let invoice = {
+      invoiceNum: Math.floor(Math.random(1) * 1000000),
+      customer: formData.customerName,
+      type: formData.invoiceType,
+      serviceCode: formData.serviceCode,
+      total: gridData.reduce((total, item) => total + item.total, 0),
+    }
+    setInvoiceList([...invoiceList, invoice])
+    setShowNewInvoiceModal(false)
   }
 
   return (
-    <Card className='bg-secondary shadow' style={{ width: '45%' }}>
+    <Card className='bg-secondary shadow' style={{ width: '42%' }}>
       <CardBody>
         <Form>
-          <h6 className='heading-small text-muted mb-4'>
+          <h6 className='heading-small text-muted mb-2'>
             Customer information
           </h6>
           <div className='pl-lg-4'>
             <Row>
               <Col lg='6'>
                 <FormGroup>
-                  <label
-                    className='form-control-label'
-                    htmlFor='input-username'
-                  >
-                    Customer Name
-                  </label>
+                  <label className='form-control-label'>Customer Name</label>
                   <Input
                     className='form-control-alternative'
                     id='input-username'
                     placeholder='Customer Name'
                     type='text'
-                    defaultValue={formData.customerName}
+                    value={formData.customerName}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -75,7 +109,7 @@ function InvoiceForm() {
                     id='input-email'
                     placeholder='Invoice type'
                     type='text'
-                    defaultValue={formData.invoiceType}
+                    value={formData.invoiceType}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -100,7 +134,7 @@ function InvoiceForm() {
                     id='input-first-name'
                     placeholder='Business unit'
                     type='text'
-                    defaultValue={formData.businessUnit}
+                    value={formData.businessUnit}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -120,11 +154,10 @@ function InvoiceForm() {
                   </label>
                   <Input
                     className='form-control-alternative'
-                    defaultValue='code'
                     id='input-last-name'
                     placeholder='Service code'
                     type='text'
-                    defaultValue={formData.serviceCode}
+                    value={formData.serviceCode}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -152,7 +185,8 @@ function InvoiceForm() {
                     placeholder='Description'
                     type='textarea'
                     rows='2'
-                    defaultValue={formData.description}
+                    value={formData.description}
+                    ref={descriptionRef}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -174,7 +208,8 @@ function InvoiceForm() {
                     id='input-city'
                     placeholder='Quantity'
                     type='text'
-                    defaultValue={formData.quantity}
+                    value={formData.quantity}
+                    ref={quantityRef}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -194,7 +229,8 @@ function InvoiceForm() {
                     id='input-country'
                     placeholder='Price'
                     type='text'
-                    defaultValue={formData.price}
+                    value={formData.price}
+                    ref={priceRef}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -216,13 +252,8 @@ function InvoiceForm() {
                 placeholder='Leave your comments here ...'
                 rows='4'
                 type='textarea'
-                defaultValue={formData.comments}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    comments: e.target.value,
-                  })
-                }
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
               />
             </FormGroup>
           </div>
@@ -245,7 +276,7 @@ function InvoiceForm() {
         <Button color='primary' data-dismiss='modal' type='button'>
           SAVE DRAFT
         </Button>
-        <Button color='success' type='button'>
+        <Button color='success' type='button' onClick={saveInvoice}>
           SUBMIT
         </Button>
       </div>
