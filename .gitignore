@@ -1,0 +1,10 @@
+/build
+/node_modules
+package-lock.json
+/build
+.eslintcache
+Documentation/
+ISSUE_TEMPLATE.md
+CHANGELOG.md
+LICENSE
+README.md
