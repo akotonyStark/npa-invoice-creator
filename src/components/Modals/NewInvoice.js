@@ -23,7 +23,7 @@ function NewInvoice({ setShowNewInvoiceModal }) {
   return (
     <>
       <Modal
-        style={{ width: '150%' }}
+        style={{ width: '150%', height: '600px' }}
         className='modal-dialog-centered modal-xl'
         isOpen={true}
         toggle={() => console.log('toggled')}

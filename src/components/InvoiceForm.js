@@ -1,4 +1,7 @@
 import React, { useContext, useRef, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { saveInvoice } from '../actions'
+
 import {
   FormGroup,
   Form,
@@ -30,6 +33,8 @@ function InvoiceForm() {
   const quantityRef = useRef(null)
   const priceRef = useRef(null)
 
+  const dispatch = useDispatch()
+
   useEffect(() => {
     //console.log('Form Data in Form: ', formData)
     //console.log('Grid Data in Form: ', gridData)
@@ -40,7 +45,7 @@ function InvoiceForm() {
   }, [gridData, invoiceList])
 
   const addRecordToData = (item) => {
-    const obj = { ...item, total: item.quantity * item.price }
+    const obj = { ...item, ext: item.quantity * item.price }
     setGridData((gridData) => [...gridData, obj])
     console.log(gridData)
     //reset form
@@ -58,27 +63,32 @@ function InvoiceForm() {
     // priceRef.current.value = ''
   }
 
-  const saveInvoice = () => {
+  const savePendingInvoice = () => {
     console.log('saving...')
 
     let invoice = {
+      status: 'pending',
       invoiceNum: Math.floor(Math.random(1) * 1000000),
       customer: formData.customerName,
       type: formData.invoiceType,
       serviceCode: formData.serviceCode,
-      total: gridData.reduce((total, item) => total + item.total, 0),
+      comments: formData.comments,
+      total: gridData.reduce((total, item) => total + item.ext, 0),
+      gridInfo: gridData,
     }
-    setInvoiceList([...invoiceList, invoice])
+
+    dispatch(saveInvoice(invoice))
     setShowNewInvoiceModal(false)
   }
 
   return (
-    <Card className='bg-secondary shadow' style={{ width: '42%' }}>
+    <Card
+      className='bg-secondary shadow'
+      style={{ width: '42%', height: '750px' }}
+    >
       <CardBody>
         <Form>
-          <h6 className='heading-small text-muted mb-2'>
-            Customer information
-          </h6>
+          <h6 className='heading-small text-muted mb-2'>Invoice Details</h6>
           <div className='pl-lg-4'>
             <Row>
               <Col lg='6'>
@@ -102,13 +112,10 @@ function InvoiceForm() {
               <Col lg='6'>
                 <FormGroup>
                   <label className='form-control-label' htmlFor='input-email'>
-                    Invoice Type
+                    Service Type
                   </label>
-                  <Input
-                    className='form-control-alternative'
-                    id='input-email'
-                    placeholder='Invoice type'
-                    type='text'
+                  <select
+                    className='form-control'
                     value={formData.invoiceType}
                     onChange={(e) =>
                       setFormData({
@@ -116,7 +123,30 @@ function InvoiceForm() {
                         invoiceType: e.target.value,
                       })
                     }
-                  />
+                  >
+                    <option value=''>Select Type</option>
+                    <option value='Sanctions'>Sanctions</option>
+                    <option value='Licensing'>Licensing</option>
+                    <option value='Processing Fee'>Processing Fee</option>
+                    <option value='LPG Distribution &amp; Compensation Margin'>
+                      LPG Distribution &amp; Compensation Margin
+                    </option>
+                    <option value='UPPF Returns/Claims'>
+                      UPPF Returns/Claims
+                    </option>
+                    <option value='Fuel Marking Margin'>
+                      Fuel Marking Margin
+                    </option>
+                    <option value='Price Stabilization &amp; Recovery Levy'>
+                      Price Stabilization &amp; Recovery Levy
+                    </option>
+                    <option value='Kero Promotion Margin'>
+                      Kero Promotion Margin
+                    </option>
+                    <option value='Primary Distribution Margin'>
+                      Primary Distribution Margin
+                    </option>
+                  </select>
                 </FormGroup>
               </Col>
             </Row>
@@ -129,11 +159,9 @@ function InvoiceForm() {
                   >
                     Business Unit
                   </label>
-                  <Input
-                    className='form-control-alternative'
-                    id='input-first-name'
-                    placeholder='Business unit'
-                    type='text'
+                  <select
+                    className='form-control'
+                    //defaultValue="Select Unit"
                     value={formData.businessUnit}
                     onChange={(e) =>
                       setFormData({
@@ -141,7 +169,14 @@ function InvoiceForm() {
                         businessUnit: e.target.value,
                       })
                     }
-                  />
+                  >
+                    <option value=''>Select Unit</option>
+                    <option value='PPR'>PPR</option>
+                    <option value='UPPF'>UPPF</option>
+                    <option value='Licensing'>Licensing</option>
+                    <option value='IM'>IM </option>
+                    <option value='Quality Assurance'>Quality Assurance</option>
+                  </select>
                 </FormGroup>
               </Col>
               <Col lg='6'>
@@ -152,11 +187,9 @@ function InvoiceForm() {
                   >
                     Service Code
                   </label>
-                  <Input
-                    className='form-control-alternative'
-                    id='input-last-name'
-                    placeholder='Service code'
-                    type='text'
+
+                  <select
+                    className='form-control'
                     value={formData.serviceCode}
                     onChange={(e) =>
                       setFormData({
@@ -164,14 +197,15 @@ function InvoiceForm() {
                         serviceCode: e.target.value,
                       })
                     }
-                  />
+                  >
+                    <option value=''>Select Unit</option>
+                  </select>
                 </FormGroup>
               </Col>
             </Row>
           </div>
-          <hr className='my-4' />
-          {/* Address */}
-          <h6 className='heading-small text-muted mb-4'>Item information</h6>
+          {/* <hr className='my-4' /> */}
+          {/* <h6 className='heading-small text-muted mb-4'>Item information</h6> */}
           <div className='pl-lg-4'>
             <Row>
               <Col md='12'>
@@ -242,7 +276,7 @@ function InvoiceForm() {
               </Col>
             </Row>
           </div>
-          <hr className='my-4' />
+          <hr className='my-2' />
           {/* Description */}
           <h6 className='heading-small text-muted mb-4'>Comments</h6>
           <div className='pl-lg-4'>
@@ -250,7 +284,7 @@ function InvoiceForm() {
               <Input
                 className='form-control-alternative'
                 placeholder='Leave your comments here ...'
-                rows='4'
+                rows='3'
                 type='textarea'
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
@@ -261,7 +295,11 @@ function InvoiceForm() {
         <Row>
           <Col lg='6'>
             <button
-              style={{ backgroundColor: 'transparent', border: 'none' }}
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                marginBottom: 15,
+              }}
               type='button'
               onClick={() => addRecordToData(formData)}
             >
@@ -271,15 +309,30 @@ function InvoiceForm() {
             </button>
           </Col>
         </Row>
+        <Row>
+          <Col lg='6'>
+            <Button
+              color='primary'
+              data-dismiss='modal'
+              type='button'
+              style={{ width: '100%' }}
+            >
+              SAVE AS DRAFT
+            </Button>
+          </Col>
+          <Col lg='6'>
+            <Button
+              color='success'
+              type='button'
+              onClick={savePendingInvoice}
+              style={{ width: '100%' }}
+            >
+              SUBMIT
+            </Button>
+          </Col>
+        </Row>
       </CardBody>
-      <div className='modal-footer'>
-        <Button color='primary' data-dismiss='modal' type='button'>
-          SAVE DRAFT
-        </Button>
-        <Button color='success' type='button' onClick={saveInvoice}>
-          SUBMIT
-        </Button>
-      </div>
+      <div className='modal-footer'></div>
     </Card>
   )
 }

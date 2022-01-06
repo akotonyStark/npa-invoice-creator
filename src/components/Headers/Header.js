@@ -1,25 +1,19 @@
-/*!
 
-=========================================================
-* Argon Dashboard React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-// reactstrap components
 import { Card, CardBody, CardTitle, Container, Row, Col } from 'reactstrap'
+import { useSelector } from "react-redux";
+
+
+const moneyInTxt = (value, standard, dec = 2) => {
+  var nf = new Intl.NumberFormat(standard, {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: 2,
+  });
+  return nf.format(Number(value) ? value : 0.0);
+};
 
 const Header = () => {
+  const masterInvoiceList = useSelector((state) => state.masterInvoiceList);
+  //console.log("Header List", masterInvoiceList)
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-5 pt-md-8'>
@@ -39,7 +33,7 @@ const Header = () => {
                           Total Invoiced Amount
                         </CardTitle>
                         <span className='h2 font-weight-bold mb-0'>
-                          GHS 3,950,897
+                          GHS {moneyInTxt(masterInvoiceList.filter((invoice => invoice.status === 'approved')).reduce((total, item) => total + item.total, 0))}
                         </span>
                       </div>
                       <Col className='col-auto'>
@@ -69,7 +63,7 @@ const Header = () => {
                         >
                           Invoices
                         </CardTitle>
-                        <span className='h2 font-weight-bold mb-0'>924</span>
+                        <span className='h2 font-weight-bold mb-0'>{masterInvoiceList.length}</span>
                       </div>
                       <Col className='col-auto'>
                         <div className='icon icon-shape bg-yellow text-white rounded-circle shadow'>
@@ -96,9 +90,9 @@ const Header = () => {
                           tag='h5'
                           className='text-uppercase text-muted mb-0'
                         >
-                          Performance
+                          Approved
                         </CardTitle>
-                        <span className='h2 font-weight-bold mb-0'>49,65%</span>
+                        <span className='h2 font-weight-bold mb-0'>{masterInvoiceList.filter(item => item.status === 'approved').length}</span>
                       </div>
                       <Col className='col-auto'>
                         <div className='icon icon-shape bg-info text-white rounded-circle shadow'>

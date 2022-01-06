@@ -1,9 +1,7 @@
 import { useState, useEffect, createContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { increment, decrement, loadInvoice, saveInvoice } from '../actions'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { updateInvoiceList } from '../actions'
 
-// reactstrap components
 import {
   Button,
   Card,
@@ -12,18 +10,14 @@ import {
   Container,
   Row,
   Col,
-  Badge,
+  Modal,
 } from 'reactstrap'
 
-import Header from 'components/Headers/Header.js'
-import NewInvoice from 'components/Modals/NewInvoice'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
 
-const currency = (amount) => {
-  return amount.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'GHS',
-  })
-}
+import Header from 'components/Headers/Header.js'
+import ViewDetails from 'components/Modals/ViewDetails'
 
 const moneyInTxt = (value, standard, dec = 2) => {
   var nf = new Intl.NumberFormat(standard, {
@@ -35,28 +29,38 @@ const moneyInTxt = (value, standard, dec = 2) => {
 
 export const AppContext = createContext(null)
 
-const Index = (props) => {
-  //select redux store states
+const Approval = (props) => {
   const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
-  //const counter = useSelector((state) => state.counter);
-
-  const [activeNav, setActiveNav] = useState(1)
-  const [chartExample1Data, setChartExample1Data] = useState('data1')
-  const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false)
+  const [showViewDetails, setShowViewDetails] = useState(false)
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
-
-  const dispatch = useDispatch()
+  const [data, setData] = useState(masterInvoiceList)
 
   useEffect(() => {
-    //dispatch(increment());
-    dispatch(loadInvoice())
-    console.log('InvoiceList State = ', masterInvoiceList)
-
+    console.log('Pending invoices: ', invoiceList)
     return () => {
       //cleanup;
     }
-  }, [invoiceList])
+  }, [masterInvoiceList])
 
+  const dispatch = useDispatch()
+
+  const approve = (e) => {
+    const selectedItem = invoiceList.filter(
+      (item) => item.invoiceNum == e.target.id
+    )
+    const item = selectedItem[0]
+    item.status = 'approved'
+    const newList = [...masterInvoiceList]
+    dispatch(updateInvoiceList(newList))
+  }
+
+  const previewSelectedInvoice = (id) => {
+    console.log(id)
+    const selectedItem = invoiceList.filter((item) => item.invoiceNum == id)
+    console.log(selectedItem)
+    setData(selectedItem)
+    setShowViewDetails(true)
+  }
   return (
     <>
       <div>
@@ -69,28 +73,9 @@ const Index = (props) => {
                 <CardHeader className='border-0'>
                   <Row className='align-items-center'>
                     <div className='col'>
-                      <h3 className='mb-0'>Invoices</h3>
-                      {/* <h3>{counter}</h3>
-                      <Button onClick={() => dispatch(increment())}>
-                        Incremment
-                      </Button>
-                      <Button onClick={() => dispatch(decrement())}>
-                        Decerement
-                      </Button> */}
+                      <h3 className='mb-0'>Unapproved Invoices</h3>
                       <br />
-                      <h5 className='mb-0'>List of all invoices</h5>
-                    </div>
-                    <div className='col text-right'>
-                      <Button
-                        color='primary'
-                        href='#pablo'
-                        onClick={(e) =>
-                          setShowNewInvoiceModal(!showNewInvoiceModal)
-                        }
-                        size='md'
-                      >
-                        + New Invoice
-                      </Button>
+                      <h5 className='mb-0'>List of pending invoices</h5>
                     </div>
                   </Row>
                 </CardHeader>
@@ -102,15 +87,15 @@ const Index = (props) => {
                       <th scope='col'>Type</th>
                       <th scope='col'>Service Code</th>
                       <th scope='col'>Total Amount (GHS)</th>
-                      <th scope='col'>Status</th>
-                      <th scope='col'>Actions</th>
+                      <th scope='col'> Action </th>
                     </tr>
                   </thead>
                   <tbody>
                     {masterInvoiceList
-                      .filter((item) => item.status !== 'pending')
+                      .filter((item, i) => item.status === 'pending')
                       .map((invoice, key) => (
-                        <tr key={key}>
+                        //console.log('asas')
+                        <tr key={key} id={invoice.invoiceNum}>
                           <th scope='row'>{invoice.invoiceNum}</th>
                           <td>{invoice.customer}</td>
                           <td>{invoice.type}</td>
@@ -120,21 +105,20 @@ const Index = (props) => {
                             {moneyInTxt(invoice.total)}
                           </td>
                           <td>
-                            <Badge
-                              style={{ backgroundColor: 'gold' }}
-                              className='badge-default'
-                            >
-                              Pending Doc Number
-                            </Badge>
-                          </td>
-                          <td>
                             <Button
+                              color='info'
                               id={invoice.invoiceNum}
-                              color='success'
-                              onClick={(e) => console.log(e)}
+                              onClick={(e) =>
+                                previewSelectedInvoice(invoice.invoiceNum)
+                              }
                               size='md'
                             >
-                              Post to Ghana.Gov
+                              <span className='btn-inner--icon'>
+                                <FontAwesomeIcon icon={faEye} />
+                              </span>
+                              <span className='btn-inner--text'>
+                                View Details
+                              </span>
                             </Button>
                           </td>
                         </tr>
@@ -145,9 +129,13 @@ const Index = (props) => {
             </Col>
           </Row>
 
-          {showNewInvoiceModal ? (
+          {showViewDetails ? (
             <AppContext.Provider value={[invoiceList, setInvoiceList]}>
-              <NewInvoice setShowNewInvoiceModal={setShowNewInvoiceModal} />
+              <ViewDetails
+                setShowViewDetails={setShowViewDetails}
+                approve={approve}
+                data={data}
+              />
             </AppContext.Provider>
           ) : null}
         </Container>
@@ -156,4 +144,4 @@ const Index = (props) => {
   )
 }
 
-export default Index
+export default Approval
