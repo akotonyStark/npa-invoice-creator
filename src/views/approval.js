@@ -1,6 +1,5 @@
 import { useState, useEffect, createContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { updateInvoiceList } from '../actions'
 
 import {
   Button,
@@ -42,22 +41,10 @@ const Approval = (props) => {
     }
   }, [masterInvoiceList])
 
-  const dispatch = useDispatch()
-
-  const approve = (e) => {
-    const selectedItem = invoiceList.filter(
-      (item) => item.invoiceNum == e.target.id
-    )
-    const item = selectedItem[0]
-    item.status = 'approved'
-    const newList = [...masterInvoiceList]
-    dispatch(updateInvoiceList(newList))
-  }
-
   const previewSelectedInvoice = (id) => {
     console.log(id)
     const selectedItem = invoiceList.filter((item) => item.invoiceNum == id)
-    console.log(selectedItem)
+    console.log('Selected Item', selectedItem)
     setData(selectedItem)
     setShowViewDetails(true)
   }
@@ -133,7 +120,6 @@ const Approval = (props) => {
             <AppContext.Provider value={[invoiceList, setInvoiceList]}>
               <ViewDetails
                 setShowViewDetails={setShowViewDetails}
-                approve={approve}
                 data={data}
               />
             </AppContext.Provider>

@@ -9,6 +9,7 @@ const init = [
     total: 1960000,
     status: 'pending',
     comments: '',
+    declineReason: '',
     gridInfo: [
       {
         serviceCode: '91231',
@@ -27,6 +28,7 @@ const init = [
     total: 890000,
     status: 'pending',
     comments: '',
+    declineReason: '',
     gridInfo: [
       {
         serviceCode: '91231',

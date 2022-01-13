@@ -108,7 +108,7 @@ const Index = (props) => {
                   </thead>
                   <tbody>
                     {masterInvoiceList
-                      .filter((item) => item.status !== 'pending')
+                      .filter((item) => item.status === 'approved')
                       .map((invoice, key) => (
                         <tr key={key}>
                           <th scope='row'>{invoice.invoiceNum}</th>
@@ -129,6 +129,39 @@ const Index = (props) => {
                           </td>
                           <td>
                             <Button
+                              id={invoice.invoiceNum}
+                              color='success'
+                              onClick={(e) => console.log(e)}
+                              size='md'
+                            >
+                              Post to Ghana.Gov
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    {masterInvoiceList
+                      .filter((item) => item.status === 'declined')
+                      .map((invoice, key) => (
+                        <tr key={key}>
+                          <th scope='row'>{invoice.invoiceNum}</th>
+                          <td>{invoice.customer}</td>
+                          <td>{invoice.type}</td>
+                          <td>{invoice.serviceCode}</td>
+                          <td>
+                            <i className='fas fa-arrow-up text-success mr-3' />
+                            {moneyInTxt(invoice.total)}
+                          </td>
+                          <td>
+                            <Badge
+                              style={{ width: 110 }}
+                              className='badge-danger'
+                            >
+                              Declined
+                            </Badge>
+                          </td>
+                          <td>
+                            <Button
+                              disabled
                               id={invoice.invoiceNum}
                               color='success'
                               onClick={(e) => console.log(e)}

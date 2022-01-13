@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Card, Table } from 'reactstrap'
+import { Card, Table, Form, Input, Row } from 'reactstrap'
 import { AppContext } from 'views/Index'
 
 const moneyInTxt = (value, standard, dec = 2) => {
@@ -10,7 +10,13 @@ const moneyInTxt = (value, standard, dec = 2) => {
   return nf.format(Number(value) ? value : 0.0)
 }
 
-export default function DetailedView({ data }) {
+export default function DetailedView({
+  data,
+  selectedInvoice,
+  setSelectedInvoice,
+  showDecline,
+  setDisabled,
+}) {
   useEffect(() => {
     //console.log('GridData in Preview: ', gridData)
     console.log('Data is', data)
@@ -18,6 +24,10 @@ export default function DetailedView({ data }) {
       //cleanup
     }
   }, [])
+
+  const handleDisableButton = () => {
+    setDisabled(false)
+  }
 
   return (
     <Card
@@ -99,18 +109,31 @@ export default function DetailedView({ data }) {
           </tbody>
         </Table>
       </div>
-      <div style={styles.footer}>
-        <div style={styles.total}>
-          <h5>
-            {/* Total (GHS) {'   '}
-            {moneyInTxt(
-              gridData.reduce((total, item) => total + item.total, 0)
-            )} */}
-          </h5>
+      <div style={styles.bottomcomments}>
+        <div style={styles.comments}>
+          {/* <h5>{data.comments}</h5> */}
+          <h5>No comments</h5>
         </div>
-      </div>
-      <div style={styles.comments}>
-        <h5>{data[0].comments}</h5>
+        {showDecline ? (
+          <div style={styles.decline}>
+            {/* <p className='decline'>Decline Reason</p> */}
+            <Input
+              className='form-control-alternative'
+              id='input-reason'
+              placeholder='Enter reason here...'
+              type='textarea'
+              rows='3'
+              value={selectedInvoice.declineReason}
+              onChange={(e) =>
+                setSelectedInvoice({
+                  ...selectedInvoice,
+                  declineReason: e.target.value,
+                })
+              }
+              onKeyPress={handleDisableButton}
+            />
+          </div>
+        ) : null}
       </div>
     </Card>
   )
@@ -129,6 +152,7 @@ const styles = {
     alignItems: 'flex-start',
     //border: '1px solid blue',
   },
+
   rightHeader: {
     display: 'flex',
     width: '50%',
@@ -167,8 +191,8 @@ const styles = {
     marginTop: 10,
   },
   comments: {
-    height: '15%',
-    width: '60%',
+    height: 100,
+    width: '47%',
     overflow: 'auto',
     flexDirection: 'row',
     backgroundColor: '#eff4fd',
@@ -181,5 +205,23 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+  },
+  bottomcomments: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  decline: {
+    height: 100,
+    width: '47%',
+    overflow: 'auto',
+    flexDirection: 'row',
+    backgroundColor: '#eff4fd',
+    borderRadius: 10,
+    padding: 10,
+    color: 'darkred',
+    marginTop: 40,
+  },
+  reason: {
+    backgroundColor: 'inherit',
   },
 }

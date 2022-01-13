@@ -45,7 +45,9 @@ function InvoiceForm() {
   }, [gridData, invoiceList])
 
   const addRecordToData = (item) => {
-    const obj = { ...item, ext: item.quantity * item.price }
+    const tot = item.quantity * item.price
+    const obj = { ...item, ext: tot }
+    console.log('item:', obj)
     setGridData((gridData) => [...gridData, obj])
     console.log(gridData)
     //reset form
@@ -187,8 +189,18 @@ function InvoiceForm() {
                   >
                     Service Code
                   </label>
+                  <Input
+                    className='form-control'
+                    value={formData.serviceCode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        serviceCode: e.target.value,
+                      })
+                    }
+                  ></Input>
 
-                  <select
+                  {/* <select
                     className='form-control'
                     value={formData.serviceCode}
                     onChange={(e) =>
@@ -199,7 +211,7 @@ function InvoiceForm() {
                     }
                   >
                     <option value=''>Select Unit</option>
-                  </select>
+                  </select> */}
                 </FormGroup>
               </Col>
             </Row>

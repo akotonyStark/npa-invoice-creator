@@ -1,15 +1,15 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Card, Table } from "reactstrap";
+import React, { useState, useContext, useEffect } from 'react'
+import { Card, Table } from 'reactstrap'
 
-import { FormContext } from "./Modals/NewInvoice";
+import { FormContext } from './Modals/NewInvoice'
 
 const moneyInTxt = (value, standard, dec = 2) => {
   var nf = new Intl.NumberFormat(standard, {
     minimumFractionDigits: dec,
     maximumFractionDigits: 2,
-  });
-  return nf.format(Number(value) ? value : 0.0);
-};
+  })
+  return nf.format(Number(value) ? value : 0.0)
+}
 
 function InvoicePreview() {
   const [
@@ -21,33 +21,33 @@ function InvoicePreview() {
     init,
     comments,
     setComments,
-  ] = useContext(FormContext);
+  ] = useContext(FormContext)
 
   useEffect(() => {
     //console.log('GridData in Preview: ', gridData)
 
     return () => {
       //cleanup
-    };
-  }, [gridData]);
+    }
+  }, [gridData])
 
   return (
     <Card
-      className="shadow"
+      className='shadow'
       style={{
-        width: "58%",
-        height: "750px",
-        marginLeft: "10px",
-        padding: "30px",
+        width: '58%',
+        height: '750px',
+        marginLeft: '10px',
+        padding: '30px',
       }}
     >
       <div style={styles.header}>
         <div style={styles.leftHeader}>
           <span
-            className="avatar rounded-circle"
+            className='avatar rounded-circle'
             style={{ width: 80, height: 80, marginBottom: 10 }}
           >
-            <img src={require("../assets/img/theme/npa.png").default} />
+            <img src={require('../assets/img/theme/npa.png').default} />
           </span>
 
           <h5>
@@ -83,40 +83,40 @@ function InvoicePreview() {
         </Table>
       </div> */}
       <div style={styles.body}>
-        <Table className="table-flush" responsive>
-          <thead className="thead">
-            <tr style={{ lineHeight: "10px" }}>
-              <th scope="col" style={{ width: "10% !important" }}>
-                {" "}
+        <Table className='table-flush' responsive>
+          <thead className='thead'>
+            <tr style={{ lineHeight: '10px' }}>
+              <th scope='col' style={{ width: '10% !important' }}>
+                {' '}
                 Code
               </th>
-              <th scope="col" style={{ width: "30%" }}>
+              <th scope='col' style={{ width: '30%' }}>
                 Desc
               </th>
-              <th scope="col" style={{ width: "10%", textAlign: "right" }}>
+              <th scope='col' style={{ width: '10%', textAlign: 'right' }}>
                 Quantity
               </th>
-              <th scope="col" style={{ width: "20%", textAlign: "right" }}>
+              <th scope='col' style={{ width: '20%', textAlign: 'right' }}>
                 Price
               </th>
-              <th scope="col" style={{ width: "20%", textAlign: "right" }}>
+              <th scope='col' style={{ width: '20%', textAlign: 'right' }}>
                 Ext
               </th>
             </tr>
           </thead>
           <tbody>
             {gridData.map((item, key) => (
-              <tr style={{ lineHeight: "1px" }} key={key}>
-                <td style={{ fontSize: "10px" }}>{item.serviceCode}</td>
-                <td style={{ fontSize: "10px" }}>{item.description}</td>
-                <td style={{ fontSize: "10px", textAlign: "right" }}>
+              <tr style={{ lineHeight: '1px' }} key={key}>
+                <td style={{ fontSize: '10px' }}>{item.serviceCode}</td>
+                <td style={{ fontSize: '10px' }}>{item.description}</td>
+                <td style={{ fontSize: '10px', textAlign: 'right' }}>
                   {moneyInTxt(item.quantity)}
                 </td>
-                <td style={{ fontSize: "10px", textAlign: "right" }}>
+                <td style={{ fontSize: '10px', textAlign: 'right' }}>
                   {moneyInTxt(item.price)}
                 </td>
-                <td style={{ fontSize: "10px", textAlign: "right" }}>
-                  {moneyInTxt(item.total)}
+                <td style={{ fontSize: '10px', textAlign: 'right' }}>
+                  {moneyInTxt(item.ext)}
                 </td>
               </tr>
             ))}
@@ -126,86 +126,91 @@ function InvoicePreview() {
       <div style={styles.footer}>
         <div style={styles.total}>
           <h5>
-            Total (GHS) {"   "}
-            {moneyInTxt(
-              gridData.reduce((total, item) => total + item.total, 0)
-            )}
+            Total (GHS) {'   '}
+            {moneyInTxt(gridData.reduce((total, item) => total + item.ext, 0))}
           </h5>
         </div>
       </div>
-      <div style={styles.comments}>
-        <h5>{comments}</h5>
+      <div style={styles.bottomcomments}>
+        <div style={styles.comments}>
+          <h5>{comments}</h5>
+        </div>
       </div>
     </Card>
-  );
+  )
 }
 
 const styles = {
   header: {
-    display: "flex",
-    height: "20%",
+    display: 'flex',
+    height: '20%',
     marginBottom: 20,
   },
+  bottomcomments: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
   leftHeader: {
-    display: "flex",
-    width: "50%",
-    flexDirection: "column",
-    alignItems: "flex-start",
+    display: 'flex',
+    width: '50%',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     //border: '1px solid blue',
   },
   rightHeader: {
-    display: "flex",
-    width: "50%",
-    flexDirection: "column",
-    alignItems: "flex-end",
+    display: 'flex',
+    width: '50%',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
     //border: '1px solid green',
   },
   title: {
-    height: "14%",
-    backgroundColor: "#eff4fd",
+    height: '14%',
+    backgroundColor: '#eff4fd',
     borderRadius: 10,
     padding: 10,
     marginBottom: 25,
   },
   body: {
     marginTop: 0,
-    height: "280px",
-    maxHeight: "280px",
-    overflow: "auto",
+    height: '280px',
+    maxHeight: '280px',
+    overflow: 'auto',
   },
   footer: {
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
     marginTop: 10,
-    height: "10%",
-    overflow: "auto",
+    height: '10%',
+    overflow: 'auto',
   },
   total: {
-    display: "flex",
-    justifyContent: "flex-end",
-    width: "100%",
-    marginLeft: "40%",
-    borderTop: "1px  solid #e3e3e3",
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+    marginLeft: '40%',
+    borderTop: '1px  solid #e3e3e3',
     paddingTop: 10,
     //paddingRight: 50,
     marginTop: 10,
   },
   comments: {
-    height: "15%",
-    width: "60%",
-    overflow: "auto",
-    flexDirection: "row",
-    backgroundColor: "#eff4fd",
+    height: 100,
+    width: '47%',
+    overflow: 'auto',
+    flexDirection: 'row',
+    backgroundColor: '#eff4fd',
     borderRadius: 10,
     padding: 10,
-    color: "#cecece",
+    color: '#cecece',
     marginTop: 40,
   },
-  tablehead: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-  },
-};
 
-export default InvoicePreview;
+  tablehead: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+}
+
+export default InvoicePreview
