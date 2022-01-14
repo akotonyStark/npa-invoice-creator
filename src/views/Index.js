@@ -35,6 +35,36 @@ const moneyInTxt = (value, standard, dec = 2) => {
 
 export const AppContext = createContext(null)
 
+const postSettings = {
+  method: 'POST',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+}
+
+let checkout_nvoive = {
+  mda_branch_code: 'NPA1001',
+  firstname: 'Augustine',
+  lastname: 'Akoto',
+  phonenumber: '05423548448',
+  email: 'anugustine.akoto@persol.net',
+  application_id: '1',
+  invoice_items: [
+    {
+      service_code: 'string',
+      amount: 'string',
+      currency: 'GHS',
+      memo: 'memo',
+      account_number: '1001',
+    },
+  ],
+  redirect_url: 'string',
+  post_url: 'string',
+}
+
+// {serviceCode: '91231', description: 'some descriptions', quantity: 10, price: 2400, total: 24000}
+
 const Index = (props) => {
   //select redux store states
   const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
@@ -46,6 +76,17 @@ const Index = (props) => {
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
 
   const dispatch = useDispatch()
+
+  //new code - save invoice data to ghana.gov
+  const seveToGhana_Gov = async (invoiveId) => {
+    let selectedInvoice = invoiceList.find(
+      (invoice) => invoice.invoiceNum === invoiveId
+    )
+
+    console.log(selectedInvoice.gridInfo)
+
+    //  const invoiceSaved = await (await fetch(``, postSettings)).json()
+  }
 
   useEffect(() => {
     //dispatch(increment());
@@ -131,7 +172,9 @@ const Index = (props) => {
                             <Button
                               id={invoice.invoiceNum}
                               color='success'
-                              onClick={(e) => console.log(e)}
+                              onClick={(e) =>
+                                seveToGhana_Gov(invoice.invoiceNum)
+                              }
                               size='md'
                             >
                               Post to Ghana.Gov

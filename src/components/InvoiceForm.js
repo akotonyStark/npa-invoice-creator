@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from 'react'
+import React, { useContext, useRef, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveInvoice } from '../actions'
 
@@ -32,6 +32,43 @@ function InvoiceForm() {
   const descriptionRef = useRef(null)
   const quantityRef = useRef(null)
   const priceRef = useRef(null)
+  const [services, setServices] = useState([])
+
+  //get service
+  const getServices = async () => {
+    try {
+      let allService = await (
+        await fetch(
+          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=2&sort_by=name&sort_ascending=true`
+        )
+      ).json()
+      console.log({ dd: allService.output })
+      setServices(allService.output)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  //handle on chage event for service type
+  const handleServiceType = (e) => {
+    console.log(e.target.value)
+    setFormData({
+      ...formData,
+      invoiceType: e.target.value,
+    })
+    let selectedSeviceType = services.find(
+      (service) => service.name === e.target.value
+    )
+
+    console.log({ selectedSeviceType })
+
+    setFormData({
+      ...formData,
+      serviceCode: selectedSeviceType.service_code,
+      price: selectedSeviceType.fee,
+      quantity: 1,
+    })
+  }
 
   const dispatch = useDispatch()
 
@@ -39,6 +76,7 @@ function InvoiceForm() {
     //console.log('Form Data in Form: ', formData)
     //console.log('Grid Data in Form: ', gridData)
     console.log('Invoice List: ', invoiceList)
+    getServices()
     return () => {
       //cleanup
     }
@@ -65,8 +103,8 @@ function InvoiceForm() {
     // priceRef.current.value = ''
   }
 
-  const savePendingInvoice = () => {
-    console.log('saving...')
+  const savePendingInvoice = async () => {
+    console.log('saving ...')
 
     let invoice = {
       status: 'pending',
@@ -119,15 +157,23 @@ function InvoiceForm() {
                   <select
                     className='form-control'
                     value={formData.invoiceType}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        invoiceType: e.target.value,
-                      })
-                    }
+                    onChange={handleServiceType}
+                    // onChange={
+                    //   (handleServiceType,
+                    //   (e) =>
+                    //     setFormData({
+                    //       ...formData,
+                    //       invoiceType: e.target.value,
+                    //     }))
+                    // }
                   >
                     <option value=''>Select Type</option>
-                    <option value='Sanctions'>Sanctions</option>
+                    {services.map((service, index) => (
+                      <option key={index} value={service.name}>
+                        {service.name}
+                      </option>
+                    ))}
+                    {/* <option value='Sanctions'>Sanctions</option>
                     <option value='Licensing'>Licensing</option>
                     <option value='Processing Fee'>Processing Fee</option>
                     <option value='LPG Distribution &amp; Compensation Margin'>
@@ -147,7 +193,7 @@ function InvoiceForm() {
                     </option>
                     <option value='Primary Distribution Margin'>
                       Primary Distribution Margin
-                    </option>
+                    </option> */}
                   </select>
                 </FormGroup>
               </Col>
