@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveInvoice } from '../actions'
+import axios from 'axios'
 
 import {
   FormGroup,
@@ -33,15 +34,21 @@ function InvoiceForm() {
   const quantityRef = useRef(null)
   const priceRef = useRef(null)
   const [services, setServices] = useState([])
+  const [supportBranches, setSupportBranches] = useState([])
 
   //get service
   const getServices = async () => {
     try {
       let allService = await (
         await fetch(
-          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=2&sort_by=name&sort_ascending=true`
+          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`
         )
       ).json()
+
+      // const result = await axios.get( `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`)
+      // console.log({result}); 
+      
+
       console.log({ dd: allService.output })
       setServices(allService.output)
     } catch (error) {
@@ -49,25 +56,39 @@ function InvoiceForm() {
     }
   }
 
+  const getBranches = async () => {
+    try {
+      let allService = await (
+        await fetch(
+          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchMdaBranches?current_page=0&results_per_page=10000&sort_by=name&sort_ascending=true`
+        )
+      ).json()
+
+     
+    
+      setSupportBranches(allService.output)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  
   //handle on chage event for service type
   const handleServiceType = (e) => {
-    console.log(e.target.value)
-    setFormData({
-      ...formData,
-      invoiceType: e.target.value,
-    })
+
     let selectedSeviceType = services.find(
       (service) => service.name === e.target.value
     )
-
-    console.log({ selectedSeviceType })
 
     setFormData({
       ...formData,
       serviceCode: selectedSeviceType.service_code,
       price: selectedSeviceType.fee,
+      invoiceType:e.target.value,
       quantity: 1,
     })
+
+   // setSupportBranches(selectedSeviceType.supported_branches)
   }
 
   const dispatch = useDispatch()
@@ -77,6 +98,7 @@ function InvoiceForm() {
     //console.log('Grid Data in Form: ', gridData)
     console.log('Invoice List: ', invoiceList)
     getServices()
+    getBranches()
     return () => {
       //cleanup
     }
@@ -90,14 +112,22 @@ function InvoiceForm() {
     console.log(gridData)
     //reset form
     setFormData({
-      customerName: formData.customerName,
+       customerName: formData.customerName,
       invoiceType: formData.invoiceType,
       businessUnit: formData.businessUnit,
-      serviceCode: formData.serviceCode,
+       serviceCode: formData.serviceCode,
+      serviceCode: '',
       description: '',
       quantity: '',
       price: '',
+     // supportedBranch:'',
+     // businessUnit:'',
+     // invoiceType: '',
+     // customerName: '',
+      
     })
+
+    
     // descriptionRef.current.value = ''
     // quantityRef.current.value = ''
     // priceRef.current.value = ''
@@ -151,6 +181,37 @@ function InvoiceForm() {
               </Col>
               <Col lg='6'>
                 <FormGroup>
+                  <label
+                    className='form-control-label'
+                    htmlFor='input-first-name'
+                  >
+                    Business Unit
+                  </label>
+                  <select
+                    className='form-control'
+                    //defaultValue="Select Unit"
+                    value={formData.businessUnit}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        businessUnit: e.target.value,
+                      })
+                    }
+                  >
+                    <option value=''>Select Unit</option>
+                    <option value='PPR'>PPR</option>
+                    <option value='UPPF'>UPPF</option>
+                    <option value='Licensing'>Licensing</option>
+                    <option value='IM'>IM </option>
+                    <option value='Quality Assurance'>Quality Assurance</option>
+                  </select>
+                </FormGroup>
+              </Col>
+              
+            </Row>
+            <Row>
+            <Col lg='6'>
+                <FormGroup>
                   <label className='form-control-label' htmlFor='input-email'>
                     Service Type
                   </label>
@@ -167,7 +228,7 @@ function InvoiceForm() {
                     //     }))
                     // }
                   >
-                    <option value=''>Select Type</option>
+                    <option value=''  disabled>Select Type</option>
                     {services.map((service, index) => (
                       <option key={index} value={service.name}>
                         {service.name}
@@ -197,36 +258,7 @@ function InvoiceForm() {
                   </select>
                 </FormGroup>
               </Col>
-            </Row>
-            <Row>
-              <Col lg='6'>
-                <FormGroup>
-                  <label
-                    className='form-control-label'
-                    htmlFor='input-first-name'
-                  >
-                    Business Unit
-                  </label>
-                  <select
-                    className='form-control'
-                    //defaultValue="Select Unit"
-                    value={formData.businessUnit}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        businessUnit: e.target.value,
-                      })
-                    }
-                  >
-                    <option value=''>Select Unit</option>
-                    <option value='PPR'>PPR</option>
-                    <option value='UPPF'>UPPF</option>
-                    <option value='Licensing'>Licensing</option>
-                    <option value='IM'>IM </option>
-                    <option value='Quality Assurance'>Quality Assurance</option>
-                  </select>
-                </FormGroup>
-              </Col>
+            
               <Col lg='6'>
                 <FormGroup>
                   <label
@@ -236,7 +268,9 @@ function InvoiceForm() {
                     Service Code
                   </label>
                   <Input
+                    disabled
                     className='form-control'
+                    placeholder='Service Code'
                     value={formData.serviceCode}
                     onChange={(e) =>
                       setFormData({
@@ -265,7 +299,8 @@ function InvoiceForm() {
           {/* <hr className='my-4' /> */}
           {/* <h6 className='heading-small text-muted mb-4'>Item information</h6> */}
           <div className='pl-lg-4'>
-            <Row>
+          
+            <Row hidden>
               <Col md='12'>
                 <FormGroup>
                   <label className='form-control-label' htmlFor='input-address'>
@@ -299,6 +334,7 @@ function InvoiceForm() {
                     className='form-control-alternative'
                     id='input-city'
                     placeholder='Quantity'
+                   
                     type='text'
                     value={formData.quantity}
                     ref={quantityRef}
@@ -317,6 +353,7 @@ function InvoiceForm() {
                     Price(GHS)
                   </label>
                   <Input
+                   disabled
                     className='form-control-alternative'
                     id='input-country'
                     placeholder='Price'
@@ -330,6 +367,35 @@ function InvoiceForm() {
                       })
                     }
                   />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row >
+              <Col md='12'>
+                <FormGroup>
+                  <label className='form-control-label' htmlFor='input-address'>
+                  Supported Branch
+                  </label>
+                  <select
+                    className='form-control'
+                    value={formData?.supportedBranch||''}
+                 
+                    onChange={
+                      ((e) =>
+                        setFormData({
+                          ...formData,
+                          supportedBranch: e.target.value,
+                        }))
+                    }
+                  >
+                    <option value=''  disabled>Select Type</option>
+                    {supportBranches.map((branch, index) => (
+                      <option key={index} value={branch.branch_code}>
+                        {branch.name}
+                      </option>
+                    ))}
+                 
+                  </select>
                 </FormGroup>
               </Col>
             </Row>

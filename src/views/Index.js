@@ -2,6 +2,7 @@ import { useState, useEffect, createContext } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, loadInvoice, saveInvoice } from '../actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from 'axios'
 
 // reactstrap components
 import {
@@ -37,31 +38,47 @@ export const AppContext = createContext(null)
 
 const postSettings = {
   method: 'POST',
+  mode: 'cors', 
+  cache: 'no-cache',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
 }
 
-let checkout_nvoive = {
+let checkout_invoice = {
   mda_branch_code: 'NPA1001',
   firstname: 'Augustine',
   lastname: 'Akoto',
   phonenumber: '05423548448',
   email: 'anugustine.akoto@persol.net',
   application_id: '1',
-  invoice_items: [
-    {
-      service_code: 'string',
-      amount: 'string',
-      currency: 'GHS',
-      memo: 'memo',
-      account_number: '1001',
-    },
-  ],
+  invoice_items: [],
   redirect_url: 'string',
   post_url: 'string',
 }
+
+const renderInvoiceList = ()=>{
+
+}
+const reducer = (previousValue, currentValue) => previousValue + currentValue;
+const totalInvoceAmount =(data)=>{
+
+ let total = data.flatMap(value =>value.ext).reduce(reducer)
+ console.log({total});
+
+
+}
+
+// businessUnit: "PPR"
+// customerName: "Star Oil Company Lt"
+// description: ""
+// ext: 900
+// invoiceType: "BRV WHITE PRODUCTS 19000-25000 LITRES(RENEWAL AMOUNT)"
+// price: "900.00"
+// quantity: 1
+// serviceCode: "LIC0029"
+// supportedBranch: "NPA_HQ"
 
 // {serviceCode: '91231', description: 'some descriptions', quantity: 10, price: 2400, total: 24000}
 
@@ -78,14 +95,34 @@ const Index = (props) => {
   const dispatch = useDispatch()
 
   //new code - save invoice data to ghana.gov
-  const seveToGhana_Gov = async (invoiveId) => {
-    let selectedInvoice = invoiceList.find(
-      (invoice) => invoice.invoiceNum === invoiveId
-    )
+  const saveToGhana_Gov = async (invoiveId) => {
+    
 
-    console.log(selectedInvoice.gridInfo)
+    try {
+      let selectedInvoice = invoiceList.find(
+        (invoice) => invoice.invoiceNum === invoiveId
+      )
+      let invoiceItem = {
+        service_code:selectedInvoice.gridInfo[0].serviceCode,
+        amount: selectedInvoice.total,
+        currency: 'GHS',
+        memo: 'memo',
+        account_number: '1001',
+      }
+  
+      checkout_invoice.invoice_items.push(invoiceItem)
 
-    //  const invoiceSaved = await (await fetch(``, postSettings)).json()
+      const result = await  axios.post(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,checkout_invoice) //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
+
+          console.log({result});
+
+      
+    } catch (error) {
+      console.error(error.message)
+      
+    }
+
+   
   }
 
   useEffect(() => {
@@ -173,7 +210,7 @@ const Index = (props) => {
                               id={invoice.invoiceNum}
                               color='success'
                               onClick={(e) =>
-                                seveToGhana_Gov(invoice.invoiceNum)
+                                saveToGhana_Gov(invoice.invoiceNum)
                               }
                               size='md'
                             >
