@@ -18,6 +18,7 @@ import {
 
 import Header from 'components/Headers/Header.js'
 import NewInvoice from 'components/Modals/NewInvoice'
+import InvoiceDraft from 'components/Modals/InvoiceDraft'
 
 const currency = (amount) => {
   return amount.toLocaleString('en-US', {
@@ -38,7 +39,7 @@ export const AppContext = createContext(null)
 
 const postSettings = {
   method: 'POST',
-  mode: 'cors', 
+  mode: 'cors',
   cache: 'no-cache',
   headers: {
     Accept: 'application/json',
@@ -51,36 +52,19 @@ let checkout_invoice = {
   firstname: 'Augustine',
   lastname: 'Akoto',
   phonenumber: '05423548448',
-  email: 'anugustine.akoto@persol.net',
+  email: 'augustne.larbi-ampofo@persol.net',
   application_id: '1',
   invoice_items: [],
   redirect_url: 'string',
   post_url: 'string',
 }
 
-const renderInvoiceList = ()=>{
-
+const renderInvoiceList = () => {}
+const reducer = (previousValue, currentValue) => previousValue + currentValue
+const totalInvoceAmount = (data) => {
+  let total = data.flatMap((value) => value.ext).reduce(reducer)
+  console.log({ total })
 }
-const reducer = (previousValue, currentValue) => previousValue + currentValue;
-const totalInvoceAmount =(data)=>{
-
- let total = data.flatMap(value =>value.ext).reduce(reducer)
- console.log({total});
-
-
-}
-
-// businessUnit: "PPR"
-// customerName: "Star Oil Company Lt"
-// description: ""
-// ext: 900
-// invoiceType: "BRV WHITE PRODUCTS 19000-25000 LITRES(RENEWAL AMOUNT)"
-// price: "900.00"
-// quantity: 1
-// serviceCode: "LIC0029"
-// supportedBranch: "NPA_HQ"
-
-// {serviceCode: '91231', description: 'some descriptions', quantity: 10, price: 2400, total: 24000}
 
 const Index = (props) => {
   //select redux store states
@@ -91,38 +75,45 @@ const Index = (props) => {
   const [chartExample1Data, setChartExample1Data] = useState('data1')
   const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false)
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
+  const [draftData, setdraftData] = useState(masterInvoiceList)
+  const [showDraftDetails, setShowDraftDetails] = useState(false)
 
   const dispatch = useDispatch()
 
   //new code - save invoice data to ghana.gov
   const saveToGhana_Gov = async (invoiveId) => {
-    
-
     try {
       let selectedInvoice = invoiceList.find(
         (invoice) => invoice.invoiceNum === invoiveId
       )
       let invoiceItem = {
-        service_code:selectedInvoice.gridInfo[0].serviceCode,
-        amount: selectedInvoice.total,
+        service_code: selectedInvoice.gridInfo[0].serviceCode,
+        amount: selectedInvoice.total.toString(),
         currency: 'GHS',
         memo: 'memo',
         account_number: '1001',
       }
-  
+
       checkout_invoice.invoice_items.push(invoiceItem)
 
-      const result = await  axios.post(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,checkout_invoice) //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
+      console.log(checkout_invoice)
+      const result = await axios.post(
+        `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,
+        checkout_invoice
+      )
 
-          console.log({result});
-
-      
+      //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
     } catch (error) {
       console.error(error.message)
-      
     }
+  }
 
-   
+  const previewSelectedInvoice = (id) => {
+    //console.log(id)
+    const selectedItem = invoiceList.filter((item) => item.invoiceNum == id)
+    console.log('Selected Item', selectedItem)
+    setdraftData(selectedItem)
+    setShowDraftDetails(true)
   }
 
   useEffect(() => {
@@ -207,6 +198,7 @@ const Index = (props) => {
                           </td>
                           <td>
                             <Button
+                              style={{ width: 173 }}
                               id={invoice.invoiceNum}
                               color='success'
                               onClick={(e) =>
@@ -214,7 +206,7 @@ const Index = (props) => {
                               }
                               size='md'
                             >
-                              Post to Ghana.Gov
+                              View Invoice
                             </Button>
                           </td>
                         </tr>
@@ -241,13 +233,48 @@ const Index = (props) => {
                           </td>
                           <td>
                             <Button
-                              disabled
+                              style={{ width: 173 }}
                               id={invoice.invoiceNum}
-                              color='success'
+                              color='secondary'
                               onClick={(e) => console.log(e)}
                               size='md'
                             >
-                              Post to Ghana.Gov
+                              View Reason
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    {masterInvoiceList
+                      .filter((item) => item.status === 'draft')
+                      .map((invoice, key) => (
+                        <tr key={key}>
+                          <th scope='row'>{invoice.invoiceNum}</th>
+                          <td>{invoice.customer}</td>
+                          <td>{invoice.type}</td>
+                          <td>{invoice.serviceCode}</td>
+                          <td>
+                            <i className='fas fa-arrow-up text-success mr-3' />
+                            {moneyInTxt(invoice.total)}
+                          </td>
+                          <td>
+                            <Badge
+                              style={{ width: 110 }}
+                              className='badge-info'
+                            >
+                              Draft
+                            </Badge>
+                          </td>
+                          <td>
+                            <Button
+                              style={{ width: 173 }}
+                              id={invoice.invoiceNum}
+                              color='info'
+                              onClick={(e) =>
+                                previewSelectedInvoice(invoice.invoiceNum)
+                              }
+                              size='md'
+                            >
+                              View Draft
                             </Button>
                           </td>
                         </tr>
@@ -262,6 +289,13 @@ const Index = (props) => {
             <AppContext.Provider value={[invoiceList, setInvoiceList]}>
               <NewInvoice setShowNewInvoiceModal={setShowNewInvoiceModal} />
             </AppContext.Provider>
+          ) : null}
+          {showDraftDetails ? (
+            <InvoiceDraft
+              setShowDraftDetails={setShowDraftDetails}
+              draftData={draftData}
+              setdraftData={draftData}
+            />
           ) : null}
         </Container>
       </div>

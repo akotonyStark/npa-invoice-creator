@@ -14,27 +14,15 @@ import {
   CardBody,
 } from 'reactstrap'
 import { AppContext } from 'views/Index'
-import { FormContext } from './Modals/NewInvoice'
 
-function InvoiceForm() {
-  const [
-    formData,
-    gridData,
-    setFormData,
-    setGridData,
-    setShowNewInvoiceModal,
-    init,
-    comments,
-    setComments,
-  ] = useContext(FormContext)
-
-  const [invoiceList, setInvoiceList] = useContext(AppContext)
-
+function InvoiceFormDraft({ draftData, setShowDraftDetails }) {
   const descriptionRef = useRef(null)
   const quantityRef = useRef(null)
   const priceRef = useRef(null)
   const [services, setServices] = useState([])
   const [supportBranches, setSupportBranches] = useState([])
+  const [formData, setFormData] = useState({})
+  const [gridData, setGridData] = useState([])
 
   //get service
   const getServices = async () => {
@@ -90,19 +78,21 @@ function InvoiceForm() {
   useEffect(() => {
     //console.log('Form Data in Form: ', formData)
     //console.log('Grid Data in Form: ', gridData)
-    console.log('Invoice List: ', invoiceList)
+    console.log('Invoice List: ', draftData[0])
     getServices()
     getBranches()
     return () => {
       //cleanup
     }
-  }, [gridData, invoiceList])
+  }, [])
 
   const addRecordToData = (item) => {
     const tot = item.quantity * item.price
     const obj = { ...item, ext: tot }
     //console.log('item:', obj)
-    setGridData((gridData) => [...gridData, obj])
+    gridData.push(obj)
+    setGridData(gridData)
+    console.log(gridData)
     //console.log('GridData:', gridData)
     //reset form
     setFormData({
@@ -134,8 +124,7 @@ function InvoiceForm() {
       gridInfo: gridData,
     }
 
-    dispatch(saveInvoice(invoice))
-    setShowNewInvoiceModal(false)
+    setShowDraftDetails(false)
   }
 
   const saveDraftInvoice = async () => {
@@ -152,8 +141,7 @@ function InvoiceForm() {
       gridInfo: gridData,
     }
 
-    dispatch(saveInvoice(invoice))
-    setShowNewInvoiceModal(false)
+    setShowDraftDetails(false)
   }
 
   return (
@@ -174,7 +162,7 @@ function InvoiceForm() {
                     id='input-username'
                     placeholder='Customer Name'
                     type='text'
-                    value={formData.customerName}
+                    value={draftData[0].customer}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
@@ -194,7 +182,6 @@ function InvoiceForm() {
                   </label>
                   <select
                     className='form-control'
-                    //defaultValue="Select Unit"
                     value={formData.businessUnit}
                     onChange={(e) =>
                       setFormData({
@@ -221,7 +208,7 @@ function InvoiceForm() {
                   </label>
                   <select
                     className='form-control'
-                    value={formData.invoiceType}
+                    value={formData.serviceType}
                     onChange={handleServiceType}
                   >
                     <option value='' disabled>
@@ -275,7 +262,7 @@ function InvoiceForm() {
                     placeholder='Description'
                     type='textarea'
                     rows='2'
-                    value={formData.description}
+                    value={formData.serviceType}
                     ref={descriptionRef}
                     onChange={(e) =>
                       setFormData({
@@ -371,8 +358,13 @@ function InvoiceForm() {
                 placeholder='Leave your comments here ...'
                 rows='3'
                 type='textarea'
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
+                value={draftData[0].comments}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    comments: e.target.value,
+                  })
+                }
               />
             </FormGroup>
           </div>
@@ -402,7 +394,7 @@ function InvoiceForm() {
               type='button'
               style={{ width: '100%' }}
             >
-              SAVE AS DRAFT
+              UPDATE DRAFT
             </Button>
           </Col>
           <Col lg='6'>
@@ -422,4 +414,4 @@ function InvoiceForm() {
   )
 }
 
-export default InvoiceForm
+export default InvoiceFormDraft

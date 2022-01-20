@@ -1,8 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Card, Table } from 'reactstrap'
 
-import { FormContext } from './Modals/NewInvoice'
-
 const moneyInTxt = (value, standard, dec = 2) => {
   var nf = new Intl.NumberFormat(standard, {
     minimumFractionDigits: dec,
@@ -11,25 +9,14 @@ const moneyInTxt = (value, standard, dec = 2) => {
   return nf.format(Number(value) ? value : 0.0)
 }
 
-function InvoicePreview() {
-  const [
-    formData,
-    gridData,
-    setFormData,
-    setGridData,
-    setShowNewInvoiceModal,
-    init,
-    comments,
-    setComments,
-  ] = useContext(FormContext)
-
+function InvoicePreviewDraft({ draftData }) {
   useEffect(() => {
-    //console.log('GridData in Preview: ', gridData)
+    console.log('Data ', draftData)
 
     return () => {
       //cleanup
     }
-  }, [gridData])
+  }, [])
 
   return (
     <Card
@@ -66,22 +53,10 @@ function InvoicePreview() {
       </div>
       <div style={styles.title}>
         <h4>Invoice for</h4>
-        <h5>{formData.customerName}</h5>
-        <h5>{formData.businessUnit}</h5>
+        <h5>{draftData[0].customer}</h5>
+        <h5>{draftData[0].businessUnit}</h5>
       </div>
-      {/* <div style={styles.tablehead}>
-        <Table className='align-items-center table-flush' responsive>
-          <thead className='thead-light'>
-            <tr>
-              <th scope='col' style={{width:'60% !important' }}>Service Code</th>
-              <th scope='col' style={{width:'30%'}}>Desc</th>
-              <th scope='col' style={{width:'10%'}}>Quantity</th>
-              <th scope='col' style={{width:'20%'}}>Price</th>
-              <th scope='col' style={{width:'20%'}}>Ext</th>
-            </tr>
-          </thead>
-        </Table>
-      </div> */}
+
       <div style={styles.body}>
         <Table className='table-flush' responsive>
           <thead className='thead'>
@@ -105,7 +80,7 @@ function InvoicePreview() {
             </tr>
           </thead>
           <tbody>
-            {gridData.map((item, key) => (
+            {draftData[0].gridInfo.map((item, key) => (
               <tr style={{ lineHeight: '1px' }} key={key}>
                 <td style={{ fontSize: '10px' }}>{item.serviceCode}</td>
                 <td style={{ fontSize: '10px' }}>
@@ -129,13 +104,13 @@ function InvoicePreview() {
         <div style={styles.total}>
           <h5>
             Total (GHS) {'   '}
-            {moneyInTxt(gridData.reduce((total, item) => total + item.ext, 0))}
+            {moneyInTxt(draftData[0].total)}
           </h5>
         </div>
       </div>
       <div style={styles.bottomcomments}>
         <div style={styles.comments}>
-          <h5>{comments}</h5>
+          <h5>{draftData[0].comments}</h5>
         </div>
       </div>
     </Card>
@@ -215,4 +190,4 @@ const styles = {
   },
 }
 
-export default InvoicePreview
+export default InvoicePreviewDraft

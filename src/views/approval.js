@@ -42,7 +42,7 @@ const Approval = (props) => {
   }, [masterInvoiceList])
 
   const previewSelectedInvoice = (id) => {
-    console.log(id)
+    //console.log(id)
     const selectedItem = invoiceList.filter((item) => item.invoiceNum == id)
     console.log('Selected Item', selectedItem)
     setData(selectedItem)
