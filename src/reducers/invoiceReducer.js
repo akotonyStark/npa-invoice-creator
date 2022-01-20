@@ -45,6 +45,7 @@ const invoiceReducer = (state = init, action) => {
   switch (action.type) {
     case 'SAVE_INVOICE':
       console.log('saving new invoice: ', action.payload)
+      console.log([...state, action.payload])
       return [...state, action.payload]
     case 'LOAD_INVOICE_LIST':
       console.log('loading list')

@@ -113,6 +113,7 @@ function InvoiceForm() {
       description: formData.invoiceType,
       quantity: '',
       price: '',
+      comments: formData.comments,
       // supportedBranch:'',
       // businessUnit:'',
       // invoiceType: '',
@@ -129,7 +130,7 @@ function InvoiceForm() {
       customer: formData.customerName,
       type: formData.invoiceType,
       serviceCode: formData.serviceCode,
-      comments: formData.comments,
+      comments: comments,
       total: gridData.reduce((total, item) => total + item.ext, 0),
       gridInfo: gridData,
     }
@@ -147,7 +148,7 @@ function InvoiceForm() {
       customer: formData.customerName,
       type: formData.invoiceType,
       serviceCode: formData.serviceCode,
-      comments: formData.comments,
+      comments: comments,
       total: gridData.reduce((total, item) => total + item.ext, 0),
       gridInfo: gridData,
     }

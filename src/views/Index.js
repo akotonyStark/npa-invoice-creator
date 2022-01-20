@@ -75,7 +75,7 @@ const Index = (props) => {
   const [chartExample1Data, setChartExample1Data] = useState('data1')
   const [showNewInvoiceModal, setShowNewInvoiceModal] = useState(false)
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
-  const [draftData, setdraftData] = useState(masterInvoiceList)
+  const [draftData, setdraftData] = useState({})
   const [showDraftDetails, setShowDraftDetails] = useState(false)
 
   const dispatch = useDispatch()
@@ -109,9 +109,12 @@ const Index = (props) => {
   }
 
   const previewSelectedInvoice = (id) => {
-    //console.log(id)
-    const selectedItem = invoiceList.filter((item) => item.invoiceNum == id)
+    console.log('ID', id)
+    const selectedItem = masterInvoiceList.filter(
+      (item) => item.invoiceNum == id
+    )
     console.log('Selected Item', selectedItem)
+
     setdraftData(selectedItem)
     setShowDraftDetails(true)
   }
@@ -124,7 +127,7 @@ const Index = (props) => {
     return () => {
       //cleanup;
     }
-  }, [invoiceList])
+  }, [masterInvoiceList])
 
   return (
     <>

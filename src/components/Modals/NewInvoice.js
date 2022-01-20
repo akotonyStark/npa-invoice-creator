@@ -11,6 +11,7 @@ const init = {
   description: '',
   quantity: '',
   price: '',
+  comments: '',
 }
 
 export const FormContext = createContext(null)

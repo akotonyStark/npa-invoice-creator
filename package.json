@@ -2,6 +2,7 @@
   "name": "npa-invoice-creator",
   "version": "1.2.1",
   "description": "Dashboard for generating invoices for npa",
+  "homepage": "/npa-invoice-creator",
   "main": "/index.js",
   "keywords": [
     "react",
