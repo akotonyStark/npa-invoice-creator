@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, loadInvoice, saveInvoice } from '../actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
+import { login, logout, renewToken, getUser } from '../services/AuthService'
 
 // reactstrap components
 import {
@@ -77,6 +78,7 @@ const Index = (props) => {
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
   const [draftData, setdraftData] = useState({})
   const [showDraftDetails, setShowDraftDetails] = useState(false)
+  const [loggedInUser, setLoggedInUser] = useState([])
 
   const dispatch = useDispatch()
 
@@ -119,10 +121,25 @@ const Index = (props) => {
     setShowDraftDetails(true)
   }
 
+  const getUserInfo = async () => {
+    let res = await getUser()
+    //console.log(res)
+    const data = sessionStorage.getItem(
+      'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
+    )
+    let userOBJ = data
+    let user = JSON.parse(userOBJ)
+    console.log(user)
+    // return user
+  }
+
   useEffect(() => {
-    //dispatch(increment());
+    getUserInfo()
+  }, [])
+
+  useEffect(() => {
     dispatch(loadInvoice())
-    console.log('InvoiceList State = ', masterInvoiceList)
+    // /console.log('InvoiceList State = ', masterInvoiceList)
 
     return () => {
       //cleanup;

@@ -31,12 +31,16 @@ const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter basename={'/npa-invoice-creator'}>
+    <BrowserRouter>
       <Switch>
-        {/* <Route path='/auth' render={(props) => <Login {...props} />} /> */}
-        <Route path='/admin' render={(props) => <AdminLayout {...props} />} />
+        <Route path='/auth/login' render={(props) => <Login {...props} />} />
+        <Route
+          path='/admin/index'
+          exact
+          render={(props) => <AdminLayout {...props} />}
+        />
         <Route path='/auth' render={(props) => <AuthLayout {...props} />} />
-        <Redirect from='/npa-invoice-creator' to='/admin/index' />
+        <Redirect from='/' to='/auth/login' />
       </Switch>
     </BrowserRouter>
   </Provider>,

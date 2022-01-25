@@ -55,7 +55,7 @@ const invoiceReducer = (state = init, action) => {
       console.log(action.payload)
       return action.payload
     default:
-      console.log('defaulting to empty')
+      //console.log('defaulting to empty')
       return state
   }
 }
