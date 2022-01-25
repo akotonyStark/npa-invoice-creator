@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { getUser } from 'services/AuthService'
 import { useLocation, Route, Switch, Redirect } from 'react-router-dom'
 // reactstrap components
 import { Container } from 'reactstrap'
@@ -13,7 +14,25 @@ const Admin = (props) => {
   const mainContent = React.useRef(null)
   const location = useLocation()
 
+  const [loggedInUser, setLoggedInUser] = useState(null)
+
+  const getUserInfo = async () => {
+    let res = await getUser()
+    //console.log(res)
+    const data = sessionStorage.getItem(
+      'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
+    )
+    let userOBJ = data
+    let user = JSON.parse(userOBJ)
+    console.log(user)
+    // return user
+    setLoggedInUser((loggedInUser) => user)
+  }
+
   React.useEffect(() => {
+    console.log('admin navbar')
+    getUserInfo()
+    console.log('loged in user', loggedInUser)
     document.documentElement.scrollTop = 0
     document.scrollingElement.scrollTop = 0
     mainContent.current.scrollTop = 0

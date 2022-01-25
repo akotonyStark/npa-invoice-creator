@@ -1,19 +1,17 @@
-
 import { Card, CardBody, CardTitle, Container, Row, Col } from 'reactstrap'
-import { useSelector } from "react-redux";
-
+import { useSelector } from 'react-redux'
 
 const moneyInTxt = (value, standard, dec = 2) => {
   var nf = new Intl.NumberFormat(standard, {
     minimumFractionDigits: dec,
     maximumFractionDigits: 2,
-  });
-  return nf.format(Number(value) ? value : 0.0);
-};
+  })
+  return nf.format(Number(value) ? value : 0.0)
+}
 
 const Header = () => {
-  const masterInvoiceList = useSelector((state) => state.masterInvoiceList);
-  //console.log("Header List", masterInvoiceList)
+  const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
+  //console.log('Header List', masterInvoiceList)
   return (
     <>
       <div className='header bg-gradient-info pb-8 pt-5 pt-md-8'>
@@ -33,7 +31,14 @@ const Header = () => {
                           Total Invoiced Amount
                         </CardTitle>
                         <span className='h2 font-weight-bold mb-0'>
-                          GHS {moneyInTxt(masterInvoiceList.filter((invoice => invoice.status === 'approved')).reduce((total, item) => total + item.total, 0))}
+                          GHS{' '}
+                          {moneyInTxt(
+                            masterInvoiceList
+                              .filter(
+                                (invoice) => invoice.status === 'approved'
+                              )
+                              .reduce((total, item) => total + item.total, 0)
+                          )}
                         </span>
                       </div>
                       <Col className='col-auto'>
@@ -63,7 +68,9 @@ const Header = () => {
                         >
                           Invoices
                         </CardTitle>
-                        <span className='h2 font-weight-bold mb-0'>{masterInvoiceList.length}</span>
+                        <span className='h2 font-weight-bold mb-0'>
+                          {masterInvoiceList.length}
+                        </span>
                       </div>
                       <Col className='col-auto'>
                         <div className='icon icon-shape bg-yellow text-white rounded-circle shadow'>
@@ -92,7 +99,13 @@ const Header = () => {
                         >
                           Approved
                         </CardTitle>
-                        <span className='h2 font-weight-bold mb-0'>{masterInvoiceList.filter(item => item.status === 'approved').length}</span>
+                        <span className='h2 font-weight-bold mb-0'>
+                          {
+                            masterInvoiceList.filter(
+                              (item) => item.status === 'approved'
+                            ).length
+                          }
+                        </span>
                       </div>
                       <Col className='col-auto'>
                         <div className='icon icon-shape bg-info text-white rounded-circle shadow'>
