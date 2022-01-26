@@ -4,14 +4,15 @@ const config = {
   // the URL of our identity server
   authority: process.env.REACT_APP_AUTHORITY,
   // this ID maps to the client ID in the identity client configuration
-  client_id: process.env.REACT_APP_client_id,
-  client_root: process.env.REACT_APP_client_root,
+  client_id: process.env.REACT_APP_CLIENT_ID,
+  client_root: process.env.REACT_APP_CLIENT_ROOT_PSL,
   apiRoot: 'https://demo.identityserver.io/api/',
   // URL to redirect to after login
-  //redirect_uri: 'http://localhost:3000/signin-oidc',
-  redirect_uri: process.env.REACT_APP_redirect_uri,
+  redirect_uri: REACT_APP_REDIRECT_URI_PSL,
+  //redirect_uri: process.env.REACT_APP_redirect_uri,
   // URL to redirect to after logout
-  post_logout_redirect_uri: process.env.REACT_APP_post_logout_redirect_uri,
+  post_logout_redirect_uri: process.env.REACT_APP_post_logout_redirect_uri_PSL,
+  //post_logout_redirect_uri: process.env.REACT_APP_post_logout_redirect_uri_,
   response_type: 'code',
   // the scopes or resources we would like access to
   scope: process.env.REACT_APP_scope,
