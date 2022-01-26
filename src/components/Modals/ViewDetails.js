@@ -10,6 +10,9 @@ import Loader from './Loader'
 import SuccessModal from './SuccessModal'
 import FailureModal from './FailureModal'
 
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 function ViewDetails({ setShowViewDetails, data }) {
   const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
   const [selectedInvoice, setSelectedInvoice] = useState(data)
@@ -35,7 +38,7 @@ function ViewDetails({ setShowViewDetails, data }) {
   }
 
   const approve = async (selectedInvoice) => {
-    console.log('Selected invoice:', selectedInvoice)
+    // console.log('Selected invoice:', selectedInvoice)
 
     const item = selectedInvoice[0]
     item.status = 'approved'
@@ -62,13 +65,18 @@ function ViewDetails({ setShowViewDetails, data }) {
           `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
           checkout_invoice
         )
-        .then((result) => setShowLoader(false))
-        .catch((error) => setShowLoader(false), setShowFailure(true))
-
-      // const result = await axios.post(
-      //   `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
-      //   checkout_invoice
-      // )
+        .then((result) => {
+          setShowLoader(false)
+          toast.success(
+            'Your invoice has successfully been sent to Ghana.Gov. Come back letter to check the status of your invoice'
+          )
+        })
+        .catch((error) => {
+          setShowLoader(false)
+          toast.error(
+            'Your invoice could not be sent to Ghana.Gov. Please come back later'
+          )
+        })
 
       //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
     } catch (error) {
@@ -100,10 +108,7 @@ function ViewDetails({ setShowViewDetails, data }) {
   return (
     <>
       {loading ? <Loader /> : null}
-      {success ? <SuccessModal /> : null}
-      {failure ? (
-        <FailureModal message={'Your invoice could not be submitted'} />
-      ) : null}
+      <ToastContainer />
       <Modal
         className='modal-dialog-centered modal-lg'
         isOpen={true}
