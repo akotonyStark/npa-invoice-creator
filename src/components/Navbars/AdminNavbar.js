@@ -1,5 +1,9 @@
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { logout } from 'services/AuthService'
+import { useContext } from 'react'
+import { AdminContext } from 'layouts/Admin'
+
 // reactstrap components
 import {
   DropdownMenu,
@@ -19,6 +23,26 @@ import {
 } from 'reactstrap'
 
 const AdminNavbar = (props) => {
+  const [profile, setProfile] = React.useState('')
+  React.useEffect(() => {
+    //check if its logged in
+    const user = sessionStorage.getItem(
+      'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
+    )
+    const userOBJ = JSON.parse(user)
+    //setUserData((userData) => userData + 1)
+
+    if (!userOBJ) {
+      logout()
+    } else {
+      console.log('UserData', userOBJ)
+      setProfile((profile) => userOBJ.profile.name)
+      // setUserData(user)
+      // console.log(userData)
+      //
+    }
+  }, [])
+
   return (
     <>
       <Navbar className='navbar-top navbar-dark' expand='md' id='navbar-main'>
@@ -49,13 +73,13 @@ const AdminNavbar = (props) => {
                     <img
                       alt='...'
                       src={
-                        require('../../assets/img/theme/profile.jpg').default
+                        require('../../assets/img/theme/profile.png').default
                       }
                     />
                   </span>
                   <Media className='ml-2 d-none d-lg-block'>
                     <span className='mb-0 text-sm font-weight-bold'>
-                      Augustine Akoto
+                      {profile}
                     </span>
                   </Media>
                 </Media>

@@ -46,9 +46,9 @@ const Auth = (props) => {
   }
 
   React.useEffect(() => {
-    console.log('admin navbar')
-    getUserInfo()
-    console.log('loged in user', loggedInUser)
+    // console.log('admin navbar')
+    // getUserInfo()
+    // console.log('loged in user', loggedInUser)
     document.body.classList.add('bg-default')
     return () => {
       document.body.classList.remove('bg-default')

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { increment, decrement, loadInvoice, saveInvoice } from '../actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
-import { login, logout, renewToken, getUser } from '../services/AuthService'
 
 // reactstrap components
 import {
@@ -48,16 +47,28 @@ const postSettings = {
   },
 }
 
-let checkout_invoice = {
-  mda_branch_code: 'NPA1001',
-  firstname: 'Augustine',
-  lastname: 'Akoto',
-  phonenumber: '05423548448',
-  email: 'augustne.larbi-ampofo@persol.net',
-  application_id: '1',
-  invoice_items: [],
-  redirect_url: 'string',
-  post_url: 'string',
+const user = sessionStorage.getItem(
+  'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
+)
+const userOBJ = JSON.parse(user)
+if (userOBJ) {
+  let checkout_invoice = {
+    mda_branch_code: 'NPA1001',
+    firstname: userOBJ.profile.name,
+    lastname: userOBJ.profile.name,
+    phonenumber: '05423548448',
+    email: userOBJ.profile.email,
+    application_id: '1',
+    invoice_items: [],
+    redirect_url: 'string',
+    post_url: 'string',
+  }
+}
+
+if (process.env.NODE_ENV === 'production') {
+  console.log('production')
+} else {
+  console.log(process.env.PORT)
 }
 
 const renderInvoiceList = () => {}
@@ -78,6 +89,40 @@ const Index = (props) => {
   const [invoiceList, setInvoiceList] = useState(masterInvoiceList)
   const [draftData, setdraftData] = useState({})
   const [showDraftDetails, setShowDraftDetails] = useState(false)
+  const [services, setServices] = useState([])
+  const [supportBranches, setSupportBranches] = useState([])
+
+  //get service
+  const getServices = async () => {
+    try {
+      let allService = await (
+        await fetch(
+          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`
+        )
+      ).json()
+
+      // const result = await axios.get( `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`)
+      // console.log({result});
+
+      setServices(allService.output)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  const getBranches = async () => {
+    try {
+      let allService = await (
+        await fetch(
+          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchMdaBranches?current_page=0&results_per_page=10000&sort_by=name&sort_ascending=true`
+        )
+      ).json()
+
+      setSupportBranches(allService.output)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
 
   const dispatch = useDispatch()
 
@@ -122,7 +167,8 @@ const Index = (props) => {
 
   useEffect(() => {
     dispatch(loadInvoice())
-    // /console.log('InvoiceList State = ', masterInvoiceList)
+    getServices()
+    getBranches()
 
     return () => {
       //cleanup;
@@ -289,7 +335,9 @@ const Index = (props) => {
           </Row>
 
           {showNewInvoiceModal ? (
-            <AppContext.Provider value={[invoiceList, setInvoiceList]}>
+            <AppContext.Provider
+              value={[invoiceList, setInvoiceList, services, supportBranches]}
+            >
               <NewInvoice setShowNewInvoiceModal={setShowNewInvoiceModal} />
             </AppContext.Provider>
           ) : null}

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateInvoiceList } from '../../actions'
+import axios from 'axios'
 
 function ViewDetails({ setShowViewDetails, data }) {
   const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
@@ -15,14 +16,48 @@ function ViewDetails({ setShowViewDetails, data }) {
   const [count, setDeclineClickCount] = useState(0)
 
   const dispatch = useDispatch()
-  const approve = (selectedInvoice) => {
+  let checkout_invoice = {
+    mda_branch_code: 'NPA1001',
+    firstname: 'Augustine',
+    lastname: 'Akoto',
+    phonenumber: '05423548448',
+    email: 'augustne.larbi-ampofo@persol.net',
+    application_id: '1',
+    invoice_items: [],
+    redirect_url: 'string',
+    post_url: 'string',
+  }
+
+  const approve = async (selectedInvoice) => {
     console.log('Selected invoice:', selectedInvoice)
 
     const item = selectedInvoice[0]
     item.status = 'approved'
     const newList = [...masterInvoiceList]
     //console.log(newList)
-    dispatch(updateInvoiceList(newList))
+
+    try {
+      let invoiceItem = {
+        service_code: item.gridInfo[0].serviceCode,
+        amount: item.total.toString(),
+        currency: 'GHS',
+        memo: 'memo',
+        account_number: '1001',
+      }
+
+      checkout_invoice.invoice_items.push(invoiceItem)
+
+      console.log(checkout_invoice)
+      const result = await axios.post(
+        `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,
+        checkout_invoice
+      )
+
+      //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
+    } catch (error) {
+      console.error(error.message)
+    }
+    //dispatch(updateInvoiceList(newList))
     setShowViewDetails(false)
   }
 

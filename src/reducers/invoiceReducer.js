@@ -48,7 +48,7 @@ const invoiceReducer = (state = init, action) => {
       console.log([...state, action.payload])
       return [...state, action.payload]
     case 'LOAD_INVOICE_LIST':
-      console.log('loading list')
+      console.log('loading init list')
       return state
     case 'UPDATE_LIST':
       console.log('updating list')

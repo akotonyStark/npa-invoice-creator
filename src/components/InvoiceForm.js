@@ -28,45 +28,12 @@ function InvoiceForm() {
     setComments,
   ] = useContext(FormContext)
 
-  const [invoiceList, setInvoiceList] = useContext(AppContext)
+  const [invoiceList, setInvoiceList, services, supportBranches] =
+    useContext(AppContext)
 
   const descriptionRef = useRef(null)
   const quantityRef = useRef(null)
   const priceRef = useRef(null)
-  const [services, setServices] = useState([])
-  const [supportBranches, setSupportBranches] = useState([])
-
-  //get service
-  const getServices = async () => {
-    try {
-      let allService = await (
-        await fetch(
-          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`
-        )
-      ).json()
-
-      // const result = await axios.get( `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`)
-      // console.log({result});
-
-      setServices(allService.output)
-    } catch (error) {
-      console.error(error.message)
-    }
-  }
-
-  const getBranches = async () => {
-    try {
-      let allService = await (
-        await fetch(
-          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchMdaBranches?current_page=0&results_per_page=10000&sort_by=name&sort_ascending=true`
-        )
-      ).json()
-
-      setSupportBranches(allService.output)
-    } catch (error) {
-      console.error(error.message)
-    }
-  }
 
   //handle on chage event for service type
   const handleServiceType = (e) => {
@@ -91,8 +58,7 @@ function InvoiceForm() {
     //console.log('Form Data in Form: ', formData)
     //console.log('Grid Data in Form: ', gridData)
     console.log('Invoice List: ', invoiceList)
-    getServices()
-    getBranches()
+
     return () => {
       //cleanup
     }

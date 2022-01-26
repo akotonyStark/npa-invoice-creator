@@ -7,14 +7,16 @@ import { Container } from 'reactstrap'
 import AdminNavbar from 'components/Navbars/AdminNavbar.js'
 import AdminFooter from 'components/Footers/AdminFooter.js'
 import Sidebar from 'components/Sidebar/Sidebar.js'
+import { createContext } from 'react'
 
 import routes from 'routes.js'
 
+export const AdminContext = createContext(null)
 const Admin = (props) => {
   const mainContent = React.useRef(null)
   const location = useLocation()
 
-  const [loggedInUser, setLoggedInUser] = useState(null)
+  const [loggedInUser, setLoggedInUser] = useState()
 
   const getUserInfo = async () => {
     let res = await getUser()
@@ -22,21 +24,18 @@ const Admin = (props) => {
     const data = sessionStorage.getItem(
       'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
     )
-    let userOBJ = data
-    let user = JSON.parse(userOBJ)
-    console.log(user)
-    // return user
-    setLoggedInUser((loggedInUser) => user)
   }
 
   React.useEffect(() => {
-    console.log('admin navbar')
-    getUserInfo()
-    console.log('loged in user', loggedInUser)
     document.documentElement.scrollTop = 0
     document.scrollingElement.scrollTop = 0
     mainContent.current.scrollTop = 0
   }, [location])
+
+  React.useEffect(() => {
+    console.log('admin navbar')
+    getUserInfo()
+  }, [])
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
@@ -79,10 +78,13 @@ const Admin = (props) => {
       />
 
       <div className='main-content' ref={mainContent}>
-        <AdminNavbar
-          {...props}
-          brandText={getBrandText(props.location.pathname)}
-        />
+        <AdminContext.Provider value={loggedInUser}>
+          <AdminNavbar
+            {...props}
+            brandText={getBrandText(props.location.pathname)}
+          />
+        </AdminContext.Provider>
+
         <Switch>
           {getRoutes(routes)}
           <Redirect from='*' to='/admin/index' />
