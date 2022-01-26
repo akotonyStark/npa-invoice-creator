@@ -21,9 +21,7 @@ const Admin = (props) => {
   const getUserInfo = async () => {
     let res = await getUser()
     //console.log(res)
-    const data = sessionStorage.getItem(
-      'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
-    )
+    const data = sessionStorage.getItem(REACT_APP_OIDC_USER)
   }
 
   React.useEffect(() => {

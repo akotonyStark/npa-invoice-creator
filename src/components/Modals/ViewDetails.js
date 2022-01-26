@@ -49,7 +49,7 @@ function ViewDetails({ setShowViewDetails, data }) {
 
       console.log(checkout_invoice)
       const result = await axios.post(
-        `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,
+        `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
         checkout_invoice
       )
 

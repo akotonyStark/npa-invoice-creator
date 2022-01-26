@@ -47,9 +47,7 @@ const postSettings = {
   },
 }
 
-const user = sessionStorage.getItem(
-  'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
-)
+const user = sessionStorage.getItem(REACT_APP_OIDC_USER)
 const userOBJ = JSON.parse(user)
 if (userOBJ) {
   let checkout_invoice = {
@@ -68,7 +66,7 @@ if (userOBJ) {
 if (process.env.NODE_ENV === 'production') {
   console.log('production')
 } else {
-  console.log(process.env.PORT)
+  console.log(process.env.REACT_APP_scope)
 }
 
 const renderInvoiceList = () => {}
@@ -97,7 +95,7 @@ const Index = (props) => {
     try {
       let allService = await (
         await fetch(
-          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`
+          `${process.env.REACT_APP_API_ROOT}/Checkout/SearchAvailableServices?current_page=0&results_per_page=1000&sort_by=name&sort_ascending=true`
         )
       ).json()
 
@@ -114,7 +112,7 @@ const Index = (props) => {
     try {
       let allService = await (
         await fetch(
-          `https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/SearchMdaBranches?current_page=0&results_per_page=10000&sort_by=name&sort_ascending=true`
+          `${process.env.REACT_APP_API_ROOT}/Checkout/SearchMdaBranches?current_page=0&results_per_page=10000&sort_by=name&sort_ascending=true`
         )
       ).json()
 

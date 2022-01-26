@@ -26,9 +26,7 @@ const AdminNavbar = (props) => {
   const [profile, setProfile] = React.useState('')
   React.useEffect(() => {
     //check if its logged in
-    const user = sessionStorage.getItem(
-      'oidc.user:https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration:npa-invoice-ui'
-    )
+    const user = sessionStorage.getItem(process.env.REACT_APP_OIDC_USER)
     const userOBJ = JSON.parse(user)
     //setUserData((userData) => userData + 1)
 

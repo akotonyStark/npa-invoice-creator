@@ -2,22 +2,19 @@ import { Log, User, UserManager } from 'oidc-client'
 
 const config = {
   // the URL of our identity server
-  authority:
-    'https://psl-app-vm3/NpaAuthServer/.well-known/openid-configuration',
+  authority: process.env.REACT_APP_AUTHORITY,
   // this ID maps to the client ID in the identity client configuration
-  client_id: 'npa-invoice-ui',
-  client_root: 'http://localhost:3000',
+  client_id: process.env.REACT_APP_client_id,
+  client_root: process.env.REACT_APP_client_root,
   apiRoot: 'https://demo.identityserver.io/api/',
   // URL to redirect to after login
   //redirect_uri: 'http://localhost:3000/signin-oidc',
-  redirect_uri:
-    'http://localhost:3000/npa-invoice-creator/signin-callback.html',
+  redirect_uri: process.env.REACT_APP_redirect_uri,
   // URL to redirect to after logout
-  post_logout_redirect_uri:
-    'http://localhost:3000/npa-invoice-creator/silent-renew.html',
+  post_logout_redirect_uri: process.env.REACT_APP_post_logout_redirect_uri,
   response_type: 'code',
   // the scopes or resources we would like access to
-  scope: 'npa_invoice_api openid email profile npa_profile',
+  scope: process.env.REACT_APP_scope,
   pkce: true,
   monitorSession: false,
 }
