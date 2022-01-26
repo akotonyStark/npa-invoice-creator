@@ -6,6 +6,9 @@ import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateInvoiceList } from '../../actions'
 import axios from 'axios'
+import Loader from './Loader'
+import SuccessModal from './SuccessModal'
+import FailureModal from './FailureModal'
 
 function ViewDetails({ setShowViewDetails, data }) {
   const masterInvoiceList = useSelector((state) => state.masterInvoiceList)
@@ -14,6 +17,9 @@ function ViewDetails({ setShowViewDetails, data }) {
   const [disabled, setDisabled] = useState(false)
   const declineRef = useRef(null)
   const [count, setDeclineClickCount] = useState(0)
+  const [loading, setShowLoader] = useState(false)
+  const [success, setShowSuccess] = useState(false)
+  const [failure, setShowFailure] = useState(false)
 
   const dispatch = useDispatch()
   let checkout_invoice = {
@@ -48,17 +54,28 @@ function ViewDetails({ setShowViewDetails, data }) {
       checkout_invoice.invoice_items.push(invoiceItem)
 
       console.log(checkout_invoice)
-      const result = await axios.post(
-        `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
-        checkout_invoice
-      )
+
+      setShowLoader(true)
+
+      axios
+        .post(
+          `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
+          checkout_invoice
+        )
+        .then((result) => setShowLoader(false))
+        .catch((error) => setShowLoader(false), setShowFailure(true))
+
+      // const result = await axios.post(
+      //   `${process.env.REACT_APP_API_ROOT}/Checkout/Invoice`,
+      //   checkout_invoice
+      // )
 
       //await (await fetch(`https://iml.npa-enterprise.com/NpaGhGovCheckoutAPI/api/v1/Checkout/Invoice`,postSettings)).json()
     } catch (error) {
       console.error(error.message)
     }
     //dispatch(updateInvoiceList(newList))
-    setShowViewDetails(false)
+    //setShowViewDetails(false)
   }
 
   const declineInvoice = (selectedInvoice) => {
@@ -82,6 +99,11 @@ function ViewDetails({ setShowViewDetails, data }) {
   //console.log('data in view details: ', data)
   return (
     <>
+      {loading ? <Loader /> : null}
+      {success ? <SuccessModal /> : null}
+      {failure ? (
+        <FailureModal message={'Your invoice could not be submitted'} />
+      ) : null}
       <Modal
         className='modal-dialog-centered modal-lg'
         isOpen={true}

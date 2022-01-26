@@ -14,6 +14,7 @@ import {
   Row,
   Col,
   Badge,
+  Modal,
 } from 'reactstrap'
 
 import Header from 'components/Headers/Header.js'
@@ -47,10 +48,11 @@ const postSettings = {
   },
 }
 
-const user = sessionStorage.getItem(REACT_APP_OIDC_USER)
+const user = sessionStorage.getItem(process.env.REACT_APP_OIDC_USER)
+let checkout_invoice
 const userOBJ = JSON.parse(user)
 if (userOBJ) {
-  let checkout_invoice = {
+  checkout_invoice = {
     mda_branch_code: 'NPA1001',
     firstname: userOBJ.profile.name,
     lastname: userOBJ.profile.name,

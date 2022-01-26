@@ -21,7 +21,7 @@ const Admin = (props) => {
   const getUserInfo = async () => {
     let res = await getUser()
     //console.log(res)
-    const data = sessionStorage.getItem(REACT_APP_OIDC_USER)
+    const data = sessionStorage.getItem(process.env.REACT_APP_OIDC_USER)
   }
 
   React.useEffect(() => {

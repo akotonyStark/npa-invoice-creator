@@ -33,11 +33,8 @@ const AdminNavbar = (props) => {
     if (!userOBJ) {
       logout()
     } else {
-      console.log('UserData', userOBJ)
+      //console.log('UserData', userOBJ)
       setProfile((profile) => userOBJ.profile.name)
-      // setUserData(user)
-      // console.log(userData)
-      //
     }
   }, [])
 
