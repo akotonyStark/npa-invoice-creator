@@ -39,12 +39,7 @@ function ViewDetails({ setShowViewDetails, data }) {
 
   const approve = async (selectedInvoice) => {
     // console.log('Selected invoice:', selectedInvoice)
-
     const item = selectedInvoice[0]
-    item.status = 'approved'
-    const newList = [...masterInvoiceList]
-    //console.log(newList)
-
     try {
       let invoiceItem = {
         service_code: item.gridInfo[0].serviceCode,
@@ -70,9 +65,14 @@ function ViewDetails({ setShowViewDetails, data }) {
           toast.success(
             'Your invoice has successfully been sent to Ghana.Gov. Come back letter to check the status of your invoice'
           )
+          item.status = 'approved'
+          const newList = [...masterInvoiceList]
+          dispatch(updateInvoiceList(newList))
+          setShowViewDetails(false)
         })
         .catch((error) => {
           setShowLoader(false)
+          //setShowViewDetails(false)
           toast.error(
             'Your invoice could not be sent to Ghana.Gov. Please come back later'
           )
@@ -82,8 +82,6 @@ function ViewDetails({ setShowViewDetails, data }) {
     } catch (error) {
       console.error(error.message)
     }
-    //dispatch(updateInvoiceList(newList))
-    //setShowViewDetails(false)
   }
 
   const declineInvoice = (selectedInvoice) => {
